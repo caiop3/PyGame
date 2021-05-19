@@ -1,1 +1,1 @@
-Integrantes do grupo: Arthur Pansini e Caio Ribeiro
+Integrantes do grupo: Arthur Pansini e Caio Ribeiro;
