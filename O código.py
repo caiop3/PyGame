@@ -12,7 +12,9 @@ game = True
 image = pygame.image.load('Referencia/montain.jpg').convert()
 image = pygame.transform.scale(image, (500, 400))
 parachute_img = pygame.image.load('Referencia/parachute.png').convert_alpha()
-parachute_img = pygame.transform.scale(parachute_img, (100, 100))
+parachute_img = pygame.transform.scale(parachute_img, (120, 120))
+eagle_img = pygame.image.load('Referencia/eagle.png').convert_alpha()
+eagle_img = pygame.transform.scale(eagle_img, (50, 50))
 
 while game:
 
@@ -23,6 +25,7 @@ while game:
     window.fill((0, 0, 0))  
     window.blit(image, (0, 0))    
     window.blit(parachute_img, (210, 30))
+    window.blit(eagle_img, (100, 30))
 
     pygame.display.update()  
 
