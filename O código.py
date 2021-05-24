@@ -9,7 +9,7 @@ pygame.display.set_caption('Paraquedista')
 
 game = True
 
-image = pygame.image.load('montain.jpg').convert()
+image = pygame.image.load('Referencia/montain.jpg').convert()
 image = pygame.transform.scale(image, (125, 166))
 
 while game:
