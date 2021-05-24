@@ -17,21 +17,24 @@ eagle_img = pygame.transform.scale(eagle_img, (50, 50))
 
 game = True
 
-eagle_x = -50
+eagle_x = 550
 eagle_y = 200
 eagle_speed = 3
 
+clock = pygame.time.Clock()
+FPS = 30
+
 while game:
+    clock.tick(FPS)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             game = False
 
-    eagle_x += eagle_speed
-    eagle_y += eagle_speed
+    eagle_x -= eagle_speed
 
-    if eagle_y > HEIGHT:
-        eagle_x = -50
+    if eagle_x < -50:
+        eagle_x = 550
         eagle_y = 200
 
     window.fill((0, 0, 0))  
