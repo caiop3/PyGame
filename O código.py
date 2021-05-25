@@ -23,11 +23,12 @@ eagle2_img = pygame.transform.scale(eagle2_img, (50, 50))
 game = True
 
 eagle_x = 550
-eagle_y = random.randint(100, 300)
+eagle_y = random.randint(50, 300)
 eagle_speed_x = random.randint(3, 6)
 eagle_speed_y = random.randint(-2, 2)
+
 eagle2_x = -50
-eagle2_y = random.randint(100, 300)
+eagle2_y = random.randint(50, 300)
 eagle2_speed_x = random.randint(3, 7)
 eagle2_speed_y = random.randint(-2, 2)
 
@@ -48,13 +49,13 @@ while game:
 
     if eagle_x < -50 or eagle_y > 450 or eagle_y < -50: 
         eagle_x = 550
-        eagle_y = random.randint(100, 300)
+        eagle_y = random.randint(50, 300)
         eagle_speed_x = random.randint(3, 6)
         eagle_speed_y = random.randint(-2, 2)
 
     if eagle2_x > 500 or eagle2_y > 450 or eagle2_y < -50:
         eagle2_x = -50
-        eagle2_y = random.randint(100, 300)
+        eagle2_y = random.randint(50, 300)
         eagle2_speed_x = random.randint(3, 6)
         eagle2_speed_y = random.randint(-2, 2)
 
