@@ -1,4 +1,5 @@
 import pygame
+import random
 
 pygame.init()
 
@@ -7,19 +8,20 @@ HEIGHT = 400
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Paraquedista')
 
-
 image = pygame.image.load('C:/Users/caior/OneDrive/Documentos/Vs Code/PyGame/Referencia/montain.jpg').convert()
 image = pygame.transform.scale(image, (500, 400))
+
 parachute_img = pygame.image.load('C:/Users/caior/OneDrive/Documentos/Vs Code/PyGame/Referencia/parachute.png').convert_alpha()
 parachute_img = pygame.transform.scale(parachute_img, (120, 120))
+
 eagle_img = pygame.image.load('C:/Users/caior/OneDrive/Documentos/Vs Code/PyGame/Referencia/eagle.png').convert_alpha()
 eagle_img = pygame.transform.scale(eagle_img, (50, 50))
 
 game = True
 
 eagle_x = 550
-eagle_y = 200
-eagle_speed = 3
+eagle_y = random.randint(0, WIDTH)
+eagle_speed = random.randint(3, 7)
 
 clock = pygame.time.Clock()
 FPS = 30
@@ -35,7 +37,8 @@ while game:
 
     if eagle_x < -50:
         eagle_x = 550
-        eagle_y = 200
+        eagle_y = random.randint(0, WIDTH)
+        eagle_speed = random.randint(3, 7)
 
     window.fill((0, 0, 0))  
     window.blit(image, (0, 0))    
@@ -45,3 +48,4 @@ while game:
     pygame.display.update()  
 
 pygame.quit()
+
