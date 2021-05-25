@@ -20,8 +20,9 @@ eagle_img = pygame.transform.scale(eagle_img, (50, 50))
 game = True
 
 eagle_x = 550
-eagle_y = random.randint(0, WIDTH)
-eagle_speed = random.randint(3, 7)
+eagle_y = random.randint(50, HEIGHT-50)
+eagle_speed_x = random.randint(3, 7)
+eagle_speed_y = random.randint(-3, 3)
 
 clock = pygame.time.Clock()
 FPS = 30
@@ -33,12 +34,14 @@ while game:
         if event.type == pygame.QUIT:
             game = False
 
-    eagle_x -= eagle_speed
+    eagle_x -= eagle_speed_x
+    eagle_y += eagle_speed_y 
 
     if eagle_x < -50:
         eagle_x = 550
-        eagle_y = random.randint(0, WIDTH)
-        eagle_speed = random.randint(3, 7)
+        eagle_y = random.randint(50, HEIGHT-50)
+        eagle_speed_x = random.randint(3, 7)
+        eagle_speed_y = random.randint(-3, 3)
 
     window.fill((0, 0, 0))  
     window.blit(image, (0, 0))    
