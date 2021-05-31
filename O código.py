@@ -14,7 +14,7 @@ y_imagem_de_fundo1= HEIGHT
 image = pygame.image.load('Referencia/sky3.jpg').convert()
 image = pygame.transform.scale(image, (500, 400))
 
-parachute_img = pygame.image.load('Referencia/parachute.png').convert_alpha()
+parachute_img = pygame.image.load('Referencia/balloon.png').convert_alpha()
 parachute_img = pygame.transform.scale(parachute_img, (120, 120))
 
 eagle1_img = pygame.image.load('Referencia/eagle2.png').convert_alpha()
