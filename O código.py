@@ -8,7 +8,7 @@ HEIGHT = 400
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Paraquedista')
 
-image = pygame.image.load('Referencia/montain.jpg').convert()
+image = pygame.image.load('Referencia/sky3.png').convert()
 image = pygame.transform.scale(image, (500, 400))
 
 parachute_img = pygame.image.load('Referencia/parachute.png').convert_alpha()
