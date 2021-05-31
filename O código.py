@@ -1,3 +1,4 @@
+
 import pygame
 import random
 
@@ -7,6 +8,8 @@ WIDTH = 500
 HEIGHT = 400
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Paraquedista')
+y_imagem_de_fundo= 0
+y_imagem_de_fundo1= HEIGHT
 
 image = pygame.image.load('Referencia/sky3.png').convert()
 image = pygame.transform.scale(image, (500, 400))
@@ -72,6 +75,8 @@ FPS = 30
 eagle1 = Eagle1(eagle1_img)
 eagle2 = Eagle2(eagle2_img)
 
+
+
 while game:
     clock.tick(FPS)
 
@@ -82,13 +87,31 @@ while game:
     eagle1.update()
     eagle2.update()
 
-    window.fill((0, 0, 0))  
-    window.blit(image, (0, 0))    
-    #window.blit(parachute_img, (210, 30))
+    window.fill((0, 0, 0)) 
+    window.blit(image, (0,y_imagem_de_fundo))
+    window.blit(image, (0,y_imagem_de_fundo1)) 
+    #window.blit(image, (0, 0))    
+    window.blit(parachute_img, (210, 30))
     window.blit(eagle1.image, eagle1.rect)
     window.blit(eagle2.image, eagle2.rect)
+
+
+    # Mudando as posições da imagem de fundo:
+    y_imagem_de_fundo -= 2
+    y_imagem_de_fundo1 -= 2
+
+    # plotar novamente após sair da tela
+    if y_imagem_de_fundo1 <= -HEIGHT:
+        y_imagem_de_fundo1= HEIGHT
+
+    if y_imagem_de_fundo <= -HEIGHT:
+        y_imagem_de_fundo= HEIGHT
+
 
     pygame.display.update()  
 
 pygame.quit()
+
+
+
 
