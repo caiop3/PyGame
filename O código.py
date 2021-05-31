@@ -3,6 +3,8 @@ import pygame
 import random
 
 pygame.init()
+pygame.mixer.music.load('Referencia/musica.mp3')
+pygame.mixer.music.play()
 
 WIDTH = 500
 HEIGHT = 400
