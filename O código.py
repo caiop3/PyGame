@@ -3,15 +3,13 @@ import random
 
 pygame.init()
 
-pygame.mixer.music.load('Referencia/musica.mp3')
-pygame.mixer.music.play()
-
 WIDTH = 500
 HEIGHT = 400
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Paraquedista')
-y_imagem_de_fundo= 0
-y_imagem_de_fundo1= HEIGHT
+
+y_imagem_de_fundo = 0
+y_imagem_de_fundo1 = HEIGHT
 
 image = pygame.image.load('Referencia/sky3.png').convert()
 image = pygame.transform.scale(image, (500, 400))
@@ -25,11 +23,14 @@ eagle1_img = pygame.transform.scale(eagle1_img, (50, 50))
 eagle2_img = pygame.image.load('Referencia/eagle.png').convert_alpha()
 eagle2_img = pygame.transform.scale(eagle2_img, (50, 50))
 
+pygame.mixer.music.load('Referencia/musica.mp3')
+pygame.mixer.music.play()
 
 class Balao(pygame.sprite.Sprite):
-
     def __init__(self,img):
+
         pygame.sprite.Sprite.__init__(self)
+
         self.image = img
         self.rect = self.image.get_rect()
         self.rect.centerx = WIDTH / 2 
@@ -44,9 +45,13 @@ class Balao(pygame.sprite.Sprite):
 
         # Mantem dentro da tela
         if self.rect.right > WIDTH:
-            self.rect.right = HEIGHT
+            self.rect.right = WIDTH
         if self.rect.left < 0:
             self.rect.left = 0
+        if self.rect.top < 0:
+            self.rect.top = 0
+        if self.rect.bottom > HEIGHT:
+            self.rect.bottom = HEIGHT
         
 class Eagle1(pygame.sprite.Sprite):
     def __init__(self, img):
@@ -118,7 +123,6 @@ game = True
 clock = pygame.time.Clock()
 FPS = 30
 
-
 while game:
     clock.tick(FPS)
 
@@ -153,7 +157,7 @@ while game:
     # Tratamento de colisões
     colisao1 = pygame.sprite.spritecollide(balao, aguias, True)
     for aguia in colisao1:
-        m=Eagle1(eagle1_img)
+        m = Eagle1(eagle1_img)
         all_sprites.add(m)
         aguias.add(m)    
         balao.kill()
@@ -161,7 +165,7 @@ while game:
     
     colisao2 = pygame.sprite.spritecollide(balao, aguias, True)
     for aguia in colisao2:
-        m=Eagle2(eagle1_img)
+        m = Eagle2(eagle1_img)
         all_sprites.add(m) 
         aguias.add(m)   
         balao.kill()
