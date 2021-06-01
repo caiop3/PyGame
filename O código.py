@@ -74,8 +74,6 @@ FPS = 30
 eagle1 = Eagle1(eagle1_img)
 eagle2 = Eagle2(eagle2_img)
 
-
-
 while game:
     clock.tick(FPS)
 
@@ -94,7 +92,6 @@ while game:
     window.blit(eagle1.image, eagle1.rect)
     window.blit(eagle2.image, eagle2.rect)
 
-
     # Mudando as posições da imagem de fundo:
     y_imagem_de_fundo -= 2
     y_imagem_de_fundo1 -= 2
@@ -105,7 +102,6 @@ while game:
 
     if y_imagem_de_fundo <= -HEIGHT:
         y_imagem_de_fundo= HEIGHT
-
 
     pygame.display.update()  
 
