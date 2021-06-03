@@ -18,10 +18,10 @@ parachute_img = pygame.image.load('Referencia/balloon.png').convert_alpha()
 parachute_img = pygame.transform.scale(parachute_img, (70, 90))
 
 eagle1_img = pygame.image.load('Referencia/eagle2.png').convert_alpha()
-eagle1_img = pygame.transform.scale(eagle1_img, (50, 50))
+eagle1_img = pygame.transform.scale(eagle1_img, (50, 40))
 
 eagle2_img = pygame.image.load('Referencia/eagle.png').convert_alpha()
-eagle2_img = pygame.transform.scale(eagle2_img, (50, 50))
+eagle2_img = pygame.transform.scale(eagle2_img, (50, 40))
 
 pygame.mixer.music.load('Referencia/musica.mp3')
 pygame.mixer.music.play()
