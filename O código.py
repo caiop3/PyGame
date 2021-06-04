@@ -38,6 +38,8 @@ assets['gel_img'] = pygame.transform.scale(assets['gel_img'], (35, 35))
 # --- Importa o som de fundo
 pygame.mixer.music.load('Efeitos/musica.mp3')
 pygame.mixer.music.play()
+boom_sound = pygame.mixer.Sound('Efeitos/boom.flac')
+pop_sound = pygame.mixer.Sound('Efeitos/pop.ogg')
 
 # --- Cria a classe Covid
 class Covid(pygame.sprite.Sprite):
@@ -97,6 +99,7 @@ class Balao(pygame.sprite.Sprite):
         gel = Gel(self.assets, self.rect.bottom, self.rect.centerx)
         self.groups['all_sprites'].add(gel)
         self.groups['gels'].add(gel)
+        pop_sound.play()
 
 # --- Cria as classes das águias, uma para cada águia dependendo do lado da tela em que surge        
 class Eagle1(pygame.sprite.Sprite):
@@ -234,19 +237,25 @@ while game:
     for aguia in colisao1:
         m = Eagle1(assets)
         all_sprites.add(m)
-        aguias.add(m)    
+        aguias.add(m)  
+
         balao.kill()
+        boom_sound.play()
+        pygame.mixer.music.stop()
         game = False
-        time.sleep(1)
+        time.sleep(2)
     
     colisao2 = pygame.sprite.spritecollide(balao, aguias, True)
     for aguia in colisao2:
         m = Eagle2(assets)
         all_sprites.add(m) 
-        aguias.add(m)   
+        aguias.add(m)
+
         balao.kill()
+        boom_sound.play()
+        pygame.mixer.music.stop()
         game = False
-        time.sleep(1)
+        time.sleep(2)
     
     colisao3 = pygame.sprite.spritecollide(balao, covides, True)
     for covid in colisao3:
