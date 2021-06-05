@@ -1,48 +1,51 @@
+# ===== INÍCIO =====
+# --- Importações e pacotes do pygame  
 import pygame
 import random
+import time
 
 pygame.init()
 
+# --- Tela principal
 WIDTH = 500
 HEIGHT = 400
+move_image_1 = 0
+move_image_2 = HEIGHT
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Paraquedista')
 
-y_imagem_de_fundo = 0
-y_imagem_de_fundo1 = HEIGHT
+# --- Importa imagem de fundo e os ícones
+assets = {}
 
-image = pygame.image.load('Efeitos/sky3.png').convert()
-image = pygame.transform.scale(image, (500, 400))
+assets['image'] = pygame.image.load('Efeitos/sky3.png').convert()
+assets['image'] = pygame.transform.scale(assets['image'], (500, 400))
 
-balloon_img = pygame.image.load('Efeitos/balloon.png').convert_alpha()
-balloon_img = pygame.transform.scale(balloon_img, (40, 50))
+assets['balloon_img'] = pygame.image.load('Efeitos/balloon.png').convert_alpha()
+assets['balloon_img'] = pygame.transform.scale(assets['balloon_img'], (40, 50))
 
-eagle1_img = pygame.image.load('Efeitos/eagle2.png').convert_alpha()
-eagle1_img = pygame.transform.scale(eagle1_img, (10, 10))
+assets['eagle1_img'] = pygame.image.load('Efeitos/eagle2.png').convert_alpha()
+assets['eagle1_img'] = pygame.transform.scale(assets['eagle1_img'], (10, 10))
 
-eagle2_img = pygame.image.load('Efeitos/eagle.png').convert_alpha()
-eagle2_img = pygame.transform.scale(eagle2_img, (10, 10))
+assets['eagle2_img'] = pygame.image.load('Efeitos/eagle.png').convert_alpha()
+assets['eagle2_img'] = pygame.transform.scale(assets['eagle2_img'], (10, 10))
 
-covid_img = pygame.image.load('Efeitos/covid.png').convert_alpha()
-covid_img = pygame.transform.scale(covid_img, (20, 20))
+assets['covid_img'] = pygame.image.load('Efeitos/covid.png').convert_alpha()
+assets['covid_img'] = pygame.transform.scale(assets['covid_img'], (20, 20))
 
-# covid_img2 = pygame.image.load('Efeitos/covid2.png').convert_alpha()
-# covid_img2 = pygame.transform.scale(covid_img2, (25, 25))
-# covid_img3 = pygame.image.load('Efeitos/covid3.png').convert_alpha()
-# covid_img3 = pygame.transform.scale(covid_img3, (25, 25))
+assets['gel_img'] = pygame.image.load('Efeitos/gel.png').convert_alpha()
+assets['gel_img'] = pygame.transform.scale(assets['gel_img'], (35, 35))
 
-gel_img = pygame.image.load('Efeitos/gel.png').convert_alpha()
-gel_img = pygame.transform.scale(gel_img, (35, 35))
-
+# --- Importa o som de fundo
 pygame.mixer.music.load('Efeitos/musica.mp3')
 pygame.mixer.music.play()
 
+# --- Cria a classe Covid
 class Covid(pygame.sprite.Sprite):
-    def __init__(self, img):
+    def __init__(self, assets):
             
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = img
+        self.image = assets['covid_img']
         self.rect = self.image.get_rect()
         self.rect.x = -1000
         self.rect.y = random.randint(80, 380)
@@ -57,23 +60,25 @@ class Covid(pygame.sprite.Sprite):
             self.rect.y = random.randint(200, 300)
             self.speed_x = 5
 
+# --- Cria a classe do balão, que será movimentado pelo jogador
 class Balao(pygame.sprite.Sprite):
-    def __init__(self,img,all_sprites,all_gels,gel_img):
+    def __init__(self,groups,assets):
 
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = img
+        self.image = assets['balloon_img']
         self.rect = self.image.get_rect()
         self.rect.centerx = WIDTH / 2 
         self.rect.bottom = HEIGHT / 2 
         self.speedx = 0
         self.speedy = 0
         self.all_sprites = all_sprites
-        self.all_gels = all_gels
-        self.gel_img = gel_img
+        self.gels = gels
+        self.groups = groups
+        self.assets = assets
 
     def update(self):
-        # Atualização da posição da nave
+        # Atualiza da posição do balão
         self.rect.x += self.speedx
         self.rect.y += self.speedy
 
@@ -89,15 +94,16 @@ class Balao(pygame.sprite.Sprite):
     
     def shoot(self):
         # A nova bala vai ser criada logo acima e no centro horizontal da nave
-        gel = Gel(self.gel_img, self.rect.bottom, self.rect.centerx)
-        self.all_sprites.add(gel)
-        self.all_gels.add(gel)
-        
+        gel = Gel(self.assets, self.rect.bottom, self.rect.centerx)
+        self.groups['all_sprites'].add(gel)
+        self.groups['gels'].add(gel)
+
+# --- Cria as classes das águias, uma para cada águia dependendo do lado da tela em que surge        
 class Eagle1(pygame.sprite.Sprite):
-    def __init__(self, img):
+    def __init__(self, assets):
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = img
+        self.image = assets['eagle1_img']
         self.rect = self.image.get_rect()
         self.rect.x = -50
         self.rect.y = random.randint(200, 300)
@@ -116,10 +122,10 @@ class Eagle1(pygame.sprite.Sprite):
             self.speed_y = random.randint(-7, 4)
 
 class Eagle2(pygame.sprite.Sprite):
-    def __init__(self, img):
+    def __init__(self, assets):
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = img
+        self.image = assets['eagle2_img']
         self.rect = self.image.get_rect()
         self.rect.x = 550
         self.rect.y = random.randint(200, 300)
@@ -137,12 +143,13 @@ class Eagle2(pygame.sprite.Sprite):
             self.speed_x = random.randint(2, 6)
             self.speed_y = random.randint(-7, 4)
 
+# --- Cria classe para o gel, que pode matar o covid 
 class Gel(pygame.sprite.Sprite):
-    def __init__(self, img, bottom, centerx):
+    def __init__(self, assets, bottom, centerx):
         # Construtor da classe mãe (Sprite).
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = img
+        self.image = assets['gel_img']
         self.rect = self.image.get_rect()
 
         # Coloca no lugar inicial definido em x, y do constutor
@@ -153,41 +160,50 @@ class Gel(pygame.sprite.Sprite):
     def update(self):
         self.rect.y += self.speedy
 
-# Criando um grupo para cada obstáculo
+# --- Cria um grupo de sprites geral e para cada obstáculo
 all_sprites = pygame.sprite.Group()
 aguias = pygame.sprite.Group()
 covides = pygame.sprite.Group()
-all_gels = pygame.sprite.Group()
+gels = pygame.sprite.Group()
+groups = {}
+groups['all_sprites'] = all_sprites
+groups['aguias'] = aguias
+groups['covides'] = covides
+groups['gels'] = gels
 
-# Criando o jogador
-balao = Balao(balloon_img, all_sprites, all_gels, gel_img)
+# --- Cria o jogador (balão)
+balao = Balao(groups, assets)
 all_sprites.add(balao)
 
-covid = Covid(covid_img)
+# --- Cria as covides
+covid = Covid(assets)
 all_sprites.add(covid)
 covides.add(covid)
 
-game = True
-
-clock = pygame.time.Clock()
-FPS = 30
-
-for i in range(10):
-    eagle1 = Eagle1(eagle1_img)
-    eagle2 = Eagle2(eagle2_img)
+# --- Cria as águias e suas quantidades 
+for i in range(8):
+    eagle1 = Eagle1(assets)
+    eagle2 = Eagle2(assets)
     all_sprites.add(eagle1)
     all_sprites.add(eagle2)
     aguias.add(eagle1)
     aguias.add(eagle2)
-    
+
+game = True
+
+# --- Variável para o ajuste da velocidade
+clock = pygame.time.Clock()
+FPS = 25
+
+# ===== LOOP PRRINCIPAL =====    
 while game:
     clock.tick(FPS)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             game = False
-        if event.type == pygame.KEYDOWN:
-            # Dependendo da tecla, altera a velocidade.
+        # Verifica se apertou alguma tecla
+        if event.type == pygame.KEYDOWN: # Dependendo da tecla, altera a velocidade
             if event.key == pygame.K_LEFT:
                 balao.speedx -= 5
             if event.key == pygame.K_RIGHT:
@@ -196,11 +212,10 @@ while game:
                 balao.speedy -= 3.5
             if event.key == pygame.K_DOWN:
                 balao.speedy += 3.5
-            if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_SPACE: # Atira álcool em gel
                 balao.shoot()
-        # Verifica se soltou alguma tecla.
-        if event.type == pygame.KEYUP:
-            # Dependendo da tecla, altera a velocidade.
+        # Verifica se soltou alguma tecla
+        if event.type == pygame.KEYUP: # Dependendo da tecla, altera a velocidade
             if event.key == pygame.K_LEFT:
                 balao.speedx += 5
             if event.key == pygame.K_RIGHT:
@@ -210,61 +225,69 @@ while game:
             if event.key == pygame.K_DOWN:
                 balao.speedy -= 3.5
 
+    # --- Atualiza os sprites
     all_sprites.update()
-    # aguias.update()
+    #aguias.update()
 
-    # Tratamento de colisões
+    # --- Trata colisões
     colisao1 = pygame.sprite.spritecollide(balao, aguias, True)
     for aguia in colisao1:
-        m = Eagle1(eagle1_img)
+        m = Eagle1(assets)
         all_sprites.add(m)
         aguias.add(m)    
         balao.kill()
         game = False
+        time.sleep(1)
     
     colisao2 = pygame.sprite.spritecollide(balao, aguias, True)
     for aguia in colisao2:
-        m = Eagle2(eagle1_img)
+        m = Eagle2(assets)
         all_sprites.add(m) 
         aguias.add(m)   
         balao.kill()
         game = False
+        time.sleep(1)
     
     colisao3 = pygame.sprite.spritecollide(balao, covides, True)
     for covid in colisao3:
-        m = Covid(covid_img)
+        m = Covid(assets)
         all_sprites.add(m)
         covides.add(m)
+
     vida = 10
-    colisao4 = pygame.sprite.spritecollide(covid, all_gels, True)
+    colisao4 = pygame.sprite.spritecollide(covid, gels, True)
     if len(colisao4) > 0:
         vida -= 1
         if vida == 0:
             covid.kill()
-            m = Covid(covid_img)
+            m = Covid(assets)
             all_sprites.add(m)
             covides.add(m)
             vida = 10  
-           
-    window.fill((0, 0, 0)) 
-    window.blit(image, (0,y_imagem_de_fundo))
-    window.blit(image, (0,y_imagem_de_fundo1)) 
-    window.blit(eagle1.image, eagle1.rect)
-    window.blit(eagle2.image, eagle2.rect)
+    
+    # --- Saídas
+    window.fill((0, 0, 0)) # Preenche com a cor branca
+    window.blit(assets['image'], (0,move_image_1)) 
+    window.blit(assets['image'], (0,move_image_2)) 
+    # window.blit(eagle1.image, eagle1.rect)
+    # window.blit(eagle2.image, eagle2.rect)
 
-    # Mudando as posições da imagem de fundo:
-    y_imagem_de_fundo -= 2
-    y_imagem_de_fundo1 -= 2
+    # Muda as posições da imagem de fundo
+    move_image_1 -= 2
+    move_image_2 -= 2
 
-    # plotar novamente após sair da tela
-    if y_imagem_de_fundo1 <= -HEIGHT:
-        y_imagem_de_fundo1= HEIGHT
+    # Plota novamente após sair da tela
+    if move_image_2 <= -HEIGHT:
+        move_image_2 = HEIGHT
+    if move_image_1 <= -HEIGHT:
+        move_image_1 = HEIGHT
 
-    if y_imagem_de_fundo <= -HEIGHT:
-        y_imagem_de_fundo= HEIGHT
-
+    # Desenha todos os sprites
     all_sprites.draw(window)
-    pygame.display.update()  
 
-pygame.quit()
+    pygame.display.update()  # Mostra o novo frame para o jogador
+
+# ===== FINALIZAÇÃO =====
+pygame.quit()  # Finaliza os recursos utilizados
+
 
