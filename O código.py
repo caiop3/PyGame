@@ -96,6 +96,27 @@ class Eagle2(pygame.sprite.Sprite):
             self.rect.y = random.randint(200, 300)
             self.speed_x = random.randint(2, 6)
             self.speed_y = random.randint(-7, 4)
+class Eagle3(pygame.sprite.Sprite):
+    def __init__(self, img):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = img
+        self.rect = self.image.get_rect()
+        self.rect.x = 250
+        self.rect.y = random.randint(200, 300)
+        self.speed_x = random.randint(3, 4)
+        self.speed_y = random.randint(-1, 3)
+    
+    def update(self):
+
+        self.rect.x -= self.speed_x
+        self.rect.y += self.speed_y
+
+        if self.rect.top > 400 or self.rect.right < -50:
+            self.rect.x = 550
+            self.rect.y = random.randint(200, 300)
+            self.speed_x = random.randint(2, 6)
+            self.speed_y = random.randint(-7, 4)
 
 # Lista das colisões
 Vida = 3
@@ -112,11 +133,16 @@ all_sprites.add(balao)
 #criando aguias
 eagle1 = Eagle1(eagle1_img)
 eagle2 = Eagle2(eagle2_img)
+eagle3 = Eagle3(eagle2_img)
+
 
 aguias.add(eagle1)
 aguias.add(eagle2)
+aguias.add(eagle3)
+
 all_sprites.add(eagle1)
 all_sprites.add(eagle2)
+all_sprites.add(eagle3)
 
 game = True
 
@@ -165,11 +191,21 @@ while game:
     
     colisao2 = pygame.sprite.spritecollide(balao, aguias, True)
     for aguia in colisao2:
-        m = Eagle2(eagle1_img)
+        m = Eagle2(eagle2_img)
         all_sprites.add(m) 
         aguias.add(m)   
         balao.kill()
         game = False
+
+    colisao3 = pygame.sprite.spritecollide(balao, aguias, True)
+    for aguia in colisao3:
+        m = Eagle3(eagle2_img)
+        all_sprites.add(m) 
+        aguias.add(m)   
+        balao.kill()
+        game = False
+
+    
 
     window.fill((0, 0, 0)) 
     window.blit(image, (0,y_imagem_de_fundo))
