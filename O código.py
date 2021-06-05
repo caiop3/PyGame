@@ -158,6 +158,27 @@ class Eagle2(pygame.sprite.Sprite):
             self.rect.y = random.randint(200, 300)
             self.speed_x = random.randint(2, 6)
             self.speed_y = random.randint(-7, 4)
+class Eagle3(pygame.sprite.Sprite):
+    def __init__(self, img):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = img
+        self.rect = self.image.get_rect()
+        self.rect.x = 250
+        self.rect.y = random.randint(200, 300)
+        self.speed_x = random.randint(3, 4)
+        self.speed_y = random.randint(-1, 3)
+    
+    def update(self):
+
+        self.rect.x -= self.speed_x
+        self.rect.y += self.speed_y
+
+        if self.rect.top > 400 or self.rect.right < -50:
+            self.rect.x = 550
+            self.rect.y = random.randint(200, 300)
+            self.speed_x = random.randint(2, 6)
+            self.speed_y = random.randint(-7, 4)
 
 # --- Cria classe para o gel, que pode matar o covid 
 class Gel(pygame.sprite.Sprite):
@@ -228,6 +249,21 @@ class Player(pygame.sprite.Sprite):
         # self.rect.centerx = WIDTH / 2
         # self.rect.centery = HEIGHT / 2
 
+<<<<<<< HEAD
+#criando aguias
+eagle1 = Eagle1(eagle1_img)
+eagle2 = Eagle2(eagle2_img)
+eagle3 = Eagle3(eagle2_img)
+
+
+aguias.add(eagle1)
+aguias.add(eagle2)
+aguias.add(eagle3)
+
+all_sprites.add(eagle1)
+all_sprites.add(eagle2)
+all_sprites.add(eagle3)
+=======
         # Guarda o tick da primeira imagem
         self.last_update = pygame.time.get_ticks()
 
@@ -269,6 +305,7 @@ all_sprites = pygame.sprite.Group()
 aguias = pygame.sprite.Group()
 covides = pygame.sprite.Group()
 gels = pygame.sprite.Group()
+>>>>>>> d6fd02cae413b63211b7b07e72ba04c16de2728f
 
 groups = {}
 groups['all_sprites'] = all_sprites
@@ -346,6 +383,54 @@ while state != DONE:
 
     # --- Atualiza os sprites
     all_sprites.update()
+<<<<<<< HEAD
+    # aguias.update()
+
+    # Tratamento de colisões
+    colisao1 = pygame.sprite.spritecollide(balao, aguias, True)
+    for aguia in colisao1:
+        m = Eagle1(eagle1_img)
+        all_sprites.add(m)
+        aguias.add(m)    
+        balao.kill()
+        game = False
+    
+    colisao2 = pygame.sprite.spritecollide(balao, aguias, True)
+    for aguia in colisao2:
+        m = Eagle2(eagle2_img)
+        all_sprites.add(m) 
+        aguias.add(m)   
+        balao.kill()
+        game = False
+
+    colisao3 = pygame.sprite.spritecollide(balao, aguias, True)
+    for aguia in colisao3:
+        m = Eagle3(eagle2_img)
+        all_sprites.add(m) 
+        aguias.add(m)   
+        balao.kill()
+        game = False
+
+    
+
+    window.fill((0, 0, 0)) 
+    window.blit(image, (0,y_imagem_de_fundo))
+    window.blit(image, (0,y_imagem_de_fundo1)) 
+    window.blit(eagle1.image, eagle1.rect)
+    window.blit(eagle2.image, eagle2.rect)
+
+    # Mudando as posições da imagem de fundo:
+    y_imagem_de_fundo -= 2
+    y_imagem_de_fundo1 -= 2
+
+    # plotar novamente após sair da tela
+    if y_imagem_de_fundo1 <= -HEIGHT:
+        y_imagem_de_fundo1= HEIGHT
+
+    if y_imagem_de_fundo <= -HEIGHT:
+        y_imagem_de_fundo= HEIGHT
+
+=======
     #aguias.update()
 
     if state == PLAYING:
@@ -417,6 +502,7 @@ while state != DONE:
         move_image_1 = HEIGHT
 
     # Desenha todos os sprites
+>>>>>>> d6fd02cae413b63211b7b07e72ba04c16de2728f
     all_sprites.draw(window)
 
     text_surface = assets['score_font'].render("{:09d}".format(score), True, (0, 0, 255))
