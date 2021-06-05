@@ -39,6 +39,7 @@ assets['gel_img'] = pygame.image.load('Efeitos/gel.png').convert_alpha()
 assets['gel_img'] = pygame.transform.scale(assets['gel_img'], (20, 20))
 
 assets["score_font"] = pygame.font.Font('Efeitos/baloni.ttf', 38)
+assets["lives_font"] = pygame.font.Font('Efeitos/arcade.ttf', 28)
 
 # --- Importa o som de fundo
 pygame.mixer.music.load('Efeitos/musica.mp3')
@@ -56,6 +57,7 @@ class Covid(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
         self.image = assets['covid_img']
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = -1000
         self.rect.y = random.randint(80, 380)
@@ -77,6 +79,7 @@ class Balao(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
         self.image = assets['balloon_img']
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.centerx = WIDTH / 2 
         self.rect.bottom = HEIGHT / 2 
@@ -115,6 +118,7 @@ class Eagle1(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
         self.image = assets['eagle1_img']
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = -50
         self.rect.y = random.randint(200, 300)
@@ -137,6 +141,7 @@ class Eagle2(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
         self.image = assets['eagle2_img']
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = 550
         self.rect.y = random.randint(200, 300)
@@ -161,6 +166,7 @@ class Gel(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
         self.image = assets['gel_img']
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
 
         # Coloca no lugar inicial definido em x, y do constutor
@@ -298,7 +304,9 @@ EXPLODING = 2
 state = PLAYING
 
 score = 0
-covid_life = 3
+lives = 3
+covid_lives = 3
+keys_down = {}
 
 # ===== LOOP PRRINCIPAL =====    
 while state != DONE:
@@ -307,28 +315,34 @@ while state != DONE:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             state = DONE
+        
+        if state == PLAYING:
         # Verifica se apertou alguma tecla
-        if event.type == pygame.KEYDOWN: # Dependendo da tecla, altera a velocidade
-            if event.key == pygame.K_LEFT:
-                balao.speedx -= 5
-            if event.key == pygame.K_RIGHT:
-                balao.speedx += 5
-            if event.key == pygame.K_UP:
-                balao.speedy -= 3.5
-            if event.key == pygame.K_DOWN:
-                balao.speedy += 3.5
-            if event.key == pygame.K_SPACE: # Atira álcool em gel
-                balao.shoot()
-        # Verifica se soltou alguma tecla
-        if event.type == pygame.KEYUP: # Dependendo da tecla, altera a velocidade
-            if event.key == pygame.K_LEFT:
-                balao.speedx += 5
-            if event.key == pygame.K_RIGHT:
-                balao.speedx -= 5
-            if event.key == pygame.K_UP:
-                balao.speedy += 3.5
-            if event.key == pygame.K_DOWN:
-                balao.speedy -= 3.5
+            if event.type == pygame.KEYDOWN: # Dependendo da tecla, altera a velocidade  
+                
+                keys_down[event.key] = True
+                if event.key == pygame.K_LEFT:
+                    balao.speedx -= 5
+                if event.key == pygame.K_RIGHT:
+                    balao.speedx += 5
+                if event.key == pygame.K_UP:
+                    balao.speedy -= 3.5
+                if event.key == pygame.K_DOWN:
+                    balao.speedy += 3.5
+                if event.key == pygame.K_SPACE: # Atira álcool em gel
+                    balao.shoot()
+            # Verifica se soltou alguma tecla
+            if event.type == pygame.KEYUP: # Dependendo da tecla, altera a velocidade
+                
+                if event.key in keys_down and keys_down[event.key]:
+                    if event.key == pygame.K_LEFT:
+                        balao.speedx += 5
+                    if event.key == pygame.K_RIGHT:
+                        balao.speedx -= 5
+                    if event.key == pygame.K_UP:
+                        balao.speedy += 3.5
+                    if event.key == pygame.K_DOWN:
+                        balao.speedy -= 3.5
 
     # --- Atualiza os sprites
     all_sprites.update()
@@ -336,7 +350,7 @@ while state != DONE:
 
     if state == PLAYING:
     # --- Trata colisões
-        col_1 = pygame.sprite.spritecollide(balao, aguias, True)
+        col_1 = pygame.sprite.spritecollide(balao, aguias, True, pygame.sprite.collide_mask)
         for aguia in col_1:
             if aguia == eagle1:
                 eagle1 = Eagle1(assets)
@@ -350,14 +364,16 @@ while state != DONE:
         if len(col_1) > 0:
             assets['boom_sound'].play()
             balao.kill()
+            lives -= 1
             player = Player(balao.rect.center, player_sheet)
             all_sprites.add(player)
             state = EXPLODING
+            keys_down = {}
             pygame.mixer.music.stop()
             explosion_tick = pygame.time.get_ticks()
             explosion_duration = player.frame_ticks * len(player.animation) + 400
         
-        col_2 = pygame.sprite.spritecollide(balao, covides, True)
+        col_2 = pygame.sprite.spritecollide(balao, covides, True, pygame.sprite.collide_mask)
         for covid in col_2:
             covid = Covid(assets)
             all_sprites.add(covid)
@@ -365,22 +381,26 @@ while state != DONE:
 
             score -= 500
 
-        col_3 = pygame.sprite.spritecollide(covid, gels, True)
+        col_3 = pygame.sprite.spritecollide(covid, gels, True, pygame.sprite.collide_mask)
         for gel in col_3:
-            covid_life -= 1
-            if covid_life == 0:
+            covid_lives -= 1
+            if covid_lives == 0:
                 covid.kill()
                 covid = Covid(assets)
                 all_sprites.add(covid)
                 covides.add(covid)
-                covid_life = 3
+                covid_lives = 3
                 score += 1000  
 
     elif state == EXPLODING:
         now = pygame.time.get_ticks()
         if now - explosion_tick > explosion_duration:
-            state = DONE
-    
+            if lives == 0:
+                state = DONE
+            else:
+                state = PLAYING
+                balao = Balao(groups, assets)
+                all_sprites.add(balao)
     # --- Saídas
     window.fill((0, 0, 0)) # Preenche com a cor branca
     window.blit(assets['image'], (0,move_image_1)) 
@@ -402,6 +422,11 @@ while state != DONE:
     text_surface = assets['score_font'].render("{:09d}".format(score), True, (0, 0, 255))
     text_rect = text_surface.get_rect()
     text_rect.midtop = (WIDTH / 2,  0)
+    window.blit(text_surface, text_rect)
+
+    text_surface = assets['lives_font'].render(chr(9829) * lives, True, (255, 0, 0))
+    text_rect = text_surface.get_rect()
+    text_rect.bottomleft = (10, HEIGHT - 10)
     window.blit(text_surface, text_rect)
 
     pygame.display.update()  # Mostra o novo frame para o jogador
