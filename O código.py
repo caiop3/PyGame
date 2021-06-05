@@ -5,8 +5,6 @@ import random
 import time
 from os import path
 
-img_dir = path.join(path.dirname(__file__), 'Efeitos')
-
 pygame.init()
 
 # --- Tela principal
@@ -15,7 +13,7 @@ HEIGHT = 400
 move_image_1 = 0
 move_image_2 = HEIGHT
 window = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('Paraquedista')
+pygame.display.set_caption('UM BALAO')
 
 STILL = 0
 
@@ -40,11 +38,16 @@ assets['covid_img'] = pygame.transform.scale(assets['covid_img'], (20, 20))
 assets['gel_img'] = pygame.image.load('Efeitos/gel.png').convert_alpha()
 assets['gel_img'] = pygame.transform.scale(assets['gel_img'], (20, 20))
 
+assets["score_font"] = pygame.font.Font('Efeitos/baloni.ttf', 38)
+
 # --- Importa o som de fundo
 pygame.mixer.music.load('Efeitos/musica.mp3')
 pygame.mixer.music.play()
-boom_sound = pygame.mixer.Sound('Efeitos/boom.flac')
-pop_sound = pygame.mixer.Sound('Efeitos/pop.ogg')
+assets['boom_sound'] = pygame.mixer.Sound('Efeitos/boom.flac')
+assets['pop_sound'] = pygame.mixer.Sound('Efeitos/pop.ogg')
+
+img_dir = path.join(path.dirname(__file__), 'Efeitos')
+player_sheet = pygame.image.load(path.join(img_dir, 'ex.png')).convert_alpha()
 
 # --- Cria a classe Covid
 class Covid(pygame.sprite.Sprite):
@@ -104,7 +107,7 @@ class Balao(pygame.sprite.Sprite):
         gel = Gel(self.assets, self.rect.bottom, self.rect.centerx)
         self.groups['all_sprites'].add(gel)
         self.groups['gels'].add(gel)
-        pop_sound.play()
+        assets['pop_sound'].play()
 
 # --- Cria as classes das águias, uma para cada águia dependendo do lado da tela em que surge        
 class Eagle1(pygame.sprite.Sprite):
@@ -194,7 +197,7 @@ def load_spritesheet(spritesheet, rows, columns):
 class Player(pygame.sprite.Sprite):
     
     # Construtor da classe. O argumento player_sheet é uma imagem contendo um spritesheet.
-    def __init__(self, player_sheet, center):
+    def __init__(self, center, player_sheet):
         
         # Construtor da classe pai (Sprite).
         pygame.sprite.Sprite.__init__(self)
@@ -287,14 +290,15 @@ for i in range(8):
 
 # --- Variável para o ajuste da velocidade
 clock = pygame.time.Clock()
-FPS = 25
-
-player_sheet = pygame.image.load(path.join(img_dir, 'ex.png')).convert_alpha()
+FPS = 30
 
 DONE = 0
 PLAYING = 1
 EXPLODING = 2
 state = PLAYING
+
+score = 0
+covid_life = 3
 
 # ===== LOOP PRRINCIPAL =====    
 while state != DONE:
@@ -332,58 +336,45 @@ while state != DONE:
 
     if state == PLAYING:
     # --- Trata colisões
-        colisao1 = pygame.sprite.spritecollide(balao, aguias, True)
-        for aguia in colisao1:
-            m = Eagle1(assets)
-            all_sprites.add(m)
-            aguias.add(m)  
+        col_1 = pygame.sprite.spritecollide(balao, aguias, True)
+        for aguia in col_1:
+            if aguia == eagle1:
+                eagle1 = Eagle1(assets)
+                all_sprites.add(eagle1)
+                aguias.add(eagle1)  
+            elif aguia == eagle2:
+                eagle2 = Eagle2(assets)
+                all_sprites.add(eagle2) 
+                aguias.add(eagle2)
 
-        if len(colisao1) > 0:
-            boom_sound.play()
+        if len(col_1) > 0:
+            assets['boom_sound'].play()
             balao.kill()
-            player = Player(player_sheet, balao.rect.center)
+            player = Player(balao.rect.center, player_sheet)
             all_sprites.add(player)
             state = EXPLODING
             pygame.mixer.music.stop()
             explosion_tick = pygame.time.get_ticks()
             explosion_duration = player.frame_ticks * len(player.animation) + 400
-            # game = False
-            # time.sleep(2)
         
-        colisao2 = pygame.sprite.spritecollide(balao, aguias, True)
-        for aguia in colisao2:
-            m = Eagle2(assets)
-            all_sprites.add(m) 
-            aguias.add(m)
+        col_2 = pygame.sprite.spritecollide(balao, covides, True)
+        for covid in col_2:
+            covid = Covid(assets)
+            all_sprites.add(covid)
+            covides.add(covid)
 
-        if len(colisao2) > 0:
-            boom_sound.play()
-            balao.kill()
-            player = Player(player_sheet, balao.rect.center)
-            all_sprites.add(player)
-            state = EXPLODING
-            pygame.mixer.music.stop()
-            explosion_tick = pygame.time.get_ticks()
-            explosion_duration = player.frame_ticks * len(player.animation) + 400
-            # game = False
-            # time.sleep(2)
-        
-        colisao3 = pygame.sprite.spritecollide(balao, covides, True)
-        for covid in colisao3:
-            m = Covid(assets)
-            all_sprites.add(m)
-            covides.add(m)
+            score -= 500
 
-        vida = 10
-        colisao4 = pygame.sprite.spritecollide(covid, gels, True)
-        for gel in colisao4:
-            vida -= 1
-            if vida == 0:
+        col_3 = pygame.sprite.spritecollide(covid, gels, True)
+        for gel in col_3:
+            covid_life -= 1
+            if covid_life == 0:
                 covid.kill()
-                m = Covid(assets)
-                all_sprites.add(m)
-                covides.add(m)
-                vida = 10  
+                covid = Covid(assets)
+                all_sprites.add(covid)
+                covides.add(covid)
+                covid_life = 3
+                score += 1000  
 
     elif state == EXPLODING:
         now = pygame.time.get_ticks()
@@ -394,8 +385,6 @@ while state != DONE:
     window.fill((0, 0, 0)) # Preenche com a cor branca
     window.blit(assets['image'], (0,move_image_1)) 
     window.blit(assets['image'], (0,move_image_2)) 
-    # window.blit(eagle1.image, eagle1.rect)
-    # window.blit(eagle2.image, eagle2.rect)
 
     # Muda as posições da imagem de fundo
     move_image_1 -= 2
@@ -409,6 +398,11 @@ while state != DONE:
 
     # Desenha todos os sprites
     all_sprites.draw(window)
+
+    text_surface = assets['score_font'].render("{:09d}".format(score), True, (0, 0, 255))
+    text_rect = text_surface.get_rect()
+    text_rect.midtop = (WIDTH / 2,  0)
+    window.blit(text_surface, text_rect)
 
     pygame.display.update()  # Mostra o novo frame para o jogador
 
