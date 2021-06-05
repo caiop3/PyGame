@@ -124,7 +124,7 @@ for i in range(8):
 # ===== Loop principal =====
 while game:
     clock.tick(FPS)
-
+    
     # ----- Trata eventos
     for event in pygame.event.get():
         # ----- Verifica consequências
