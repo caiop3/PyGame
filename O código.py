@@ -17,6 +17,8 @@ move_image_2 = HEIGHT
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Paraquedista')
 
+STILL = 0
+
 # --- Importa imagem de fundo e os ícones
 assets = {}
 
@@ -187,12 +189,12 @@ def load_spritesheet(spritesheet, rows, columns):
             image.blit(spritesheet, (0, 0), dest_rect)
             sprites.append(image)
     return sprites
-STILL = 0
+
 # Classe Jogador que representa o herói
 class Player(pygame.sprite.Sprite):
     
     # Construtor da classe. O argumento player_sheet é uma imagem contendo um spritesheet.
-    def __init__(self, player_sheet):
+    def __init__(self, player_sheet, center):
         
         # Construtor da classe pai (Sprite).
         pygame.sprite.Sprite.__init__(self)
@@ -212,10 +214,10 @@ class Player(pygame.sprite.Sprite):
         self.image = self.animation[self.frame]
         # Detalhes sobre o posicionamento.
         self.rect = self.image.get_rect()
-        
+        self.rect.center = center
         # Centraliza na tela.
-        self.rect.centerx = WIDTH / 2
-        self.rect.centery = HEIGHT / 2
+        # self.rect.centerx = WIDTH / 2
+        # self.rect.centery = HEIGHT / 2
 
         # Guarda o tick da primeira imagem
         self.last_update = pygame.time.get_ticks()
@@ -242,17 +244,16 @@ class Player(pygame.sprite.Sprite):
 
             # Atualiza animação atual
             self.animation = self.animations[self.state]
-            # Reinicia a animação caso o índice da imagem atual seja inválido
-            # if self.frame >= len(self.animation):
-            #     self.frame = 0
             
-            # Armazena a posição do centro da imagem
-            center = self.rect.center
-            # Atualiza imagem atual
-            self.image = self.animation[self.frame]
-            # Atualiza os detalhes de posicionamento
-            self.rect = self.image.get_rect()
-            self.rect.center = center
+            if self.frame == len(self.animation):
+                # Se sim, tchau explosão!
+                self.kill()
+            else:
+                # Se ainda não chegou ao fim da explosão, troca de imagem.
+                center = self.rect.center
+                self.image = self.animation[self.frame]
+                self.rect = self.image.get_rect()
+                self.rect.center = center
 
 # --- Cria um grupo de sprites geral e para cada obstáculo
 all_sprites = pygame.sprite.Group()
@@ -284,21 +285,24 @@ for i in range(8):
     aguias.add(eagle1)
     aguias.add(eagle2)
 
-game = True
-
 # --- Variável para o ajuste da velocidade
 clock = pygame.time.Clock()
 FPS = 25
 
 player_sheet = pygame.image.load(path.join(img_dir, 'ex.png')).convert_alpha()
 
+DONE = 0
+PLAYING = 1
+EXPLODING = 2
+state = PLAYING
+
 # ===== LOOP PRRINCIPAL =====    
-while game:
+while state != DONE:
     clock.tick(FPS)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            game = False
+            state = DONE
         # Verifica se apertou alguma tecla
         if event.type == pygame.KEYDOWN: # Dependendo da tecla, altera a velocidade
             if event.key == pygame.K_LEFT:
@@ -326,51 +330,65 @@ while game:
     all_sprites.update()
     #aguias.update()
 
+    if state == PLAYING:
     # --- Trata colisões
-    colisao1 = pygame.sprite.spritecollide(balao, aguias, True)
-    for aguia in colisao1:
-        m = Eagle1(assets)
-        all_sprites.add(m)
-        aguias.add(m)  
-    
-        balao.kill()
-        player = Player(player_sheet)
-        all_sprites.add(player)
-        boom_sound.play()
-        pygame.mixer.music.stop()
-        # game = False
-        # time.sleep(2)
-    
-    colisao2 = pygame.sprite.spritecollide(balao, aguias, True)
-    for aguia in colisao2:
-        m = Eagle2(assets)
-        all_sprites.add(m) 
-        aguias.add(m)
+        colisao1 = pygame.sprite.spritecollide(balao, aguias, True)
+        for aguia in colisao1:
+            m = Eagle1(assets)
+            all_sprites.add(m)
+            aguias.add(m)  
 
-        balao.kill()
-        player = Player(player_sheet)
-        all_sprites.add(player)
-        boom_sound.play()
-        pygame.mixer.music.stop()
-        # game = False
-        # time.sleep(2)
-    
-    colisao3 = pygame.sprite.spritecollide(balao, covides, True)
-    for covid in colisao3:
-        m = Covid(assets)
-        all_sprites.add(m)
-        covides.add(m)
+        if len(colisao1) > 0:
+            boom_sound.play()
+            balao.kill()
+            player = Player(player_sheet, balao.rect.center)
+            all_sprites.add(player)
+            state = EXPLODING
+            pygame.mixer.music.stop()
+            explosion_tick = pygame.time.get_ticks()
+            explosion_duration = player.frame_ticks * len(player.animation) + 400
+            # game = False
+            # time.sleep(2)
+        
+        colisao2 = pygame.sprite.spritecollide(balao, aguias, True)
+        for aguia in colisao2:
+            m = Eagle2(assets)
+            all_sprites.add(m) 
+            aguias.add(m)
 
-    vida = 10
-    colisao4 = pygame.sprite.spritecollide(covid, gels, True)
-    if len(colisao4) > 0:
-        vida -= 1
-        if vida == 0:
-            covid.kill()
+        if len(colisao2) > 0:
+            boom_sound.play()
+            balao.kill()
+            player = Player(player_sheet, balao.rect.center)
+            all_sprites.add(player)
+            state = EXPLODING
+            pygame.mixer.music.stop()
+            explosion_tick = pygame.time.get_ticks()
+            explosion_duration = player.frame_ticks * len(player.animation) + 400
+            # game = False
+            # time.sleep(2)
+        
+        colisao3 = pygame.sprite.spritecollide(balao, covides, True)
+        for covid in colisao3:
             m = Covid(assets)
             all_sprites.add(m)
             covides.add(m)
-            vida = 10  
+
+        vida = 10
+        colisao4 = pygame.sprite.spritecollide(covid, gels, True)
+        for gel in colisao4:
+            vida -= 1
+            if vida == 0:
+                covid.kill()
+                m = Covid(assets)
+                all_sprites.add(m)
+                covides.add(m)
+                vida = 10  
+
+    elif state == EXPLODING:
+        now = pygame.time.get_ticks()
+        if now - explosion_tick > explosion_duration:
+            state = DONE
     
     # --- Saídas
     window.fill((0, 0, 0)) # Preenche com a cor branca
