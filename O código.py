@@ -1,5 +1,6 @@
 # ===== INÍCIO =====
 # --- Importações e pacotes do pygame  
+
 import pygame
 import random
 import time
@@ -19,6 +20,9 @@ STILL = 0
 # --- Importa imagem de fundo e os ícones
 def load_assets():
     assets = {}
+
+    assets['capa'] = pygame.image.load('Efeitos/sky_capa.png').convert()
+    assets['capa'] = pygame.transform.scale(assets['capa'], (500, 400))
 
     assets['image'] = pygame.image.load('Efeitos/sky3.png').convert()
     assets['image'] = pygame.transform.scale(assets['image'], (500, 400))
@@ -43,7 +47,7 @@ def load_assets():
 
     # --- Importa o som de fundo
     pygame.mixer.music.load('Efeitos/musica.mp3')
-    pygame.mixer.music.play()
+    
     assets['boom_sound'] = pygame.mixer.Sound('Efeitos/boom.flac')
     assets['pop_sound'] = pygame.mixer.Sound('Efeitos/pop.ogg')
 
@@ -52,7 +56,7 @@ def load_assets():
     assets['player_sheet'] = pygame.image.load(path.join(img_dir, 'ex.png')).convert_alpha()
     return assets
 
-# --- Cria a classe Covid
+# --- Cria a classe Covid 
 class Covid(pygame.sprite.Sprite):
     def __init__(self, assets):
             
@@ -276,12 +280,14 @@ def game_screen(window):
     aguias = pygame.sprite.Group()
     covides = pygame.sprite.Group()
     gels = pygame.sprite.Group()
+    
 
     groups = {}
     groups['all_sprites'] = all_sprites
     groups['aguias'] = aguias
     groups['covides'] = covides
     groups['gels'] = gels
+   
 
     # --- Cria o jogador (balão)
     balao = Balao(groups, assets)
@@ -307,22 +313,26 @@ def game_screen(window):
     DONE = 0
     PLAYING = 1
     EXPLODING = 2
-    state = PLAYING
+    INICIO = 3
+    state = 3
+    FINAL = 4
 
-    score = 0
-    lives = 3
-    covid_lives = 3
+    song = 0
+    
     keys_down = {}
-
+    pygame.mixer.music.play()
     # ===== LOOP PRRINCIPAL =====    
     while state != DONE:
         clock.tick(FPS)
+        
+            
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 state = DONE
             
             if state == PLAYING:
+                
             # Verifica se apertou alguma tecla
                 if event.type == pygame.KEYDOWN: # Dependendo da tecla, altera a velocidade  
                     
@@ -353,8 +363,34 @@ def game_screen(window):
         # --- Atualiza os sprites
         all_sprites.update()
         #aguias.update()
+        while state == INICIO:
+            
+            score = 0
+            lives = 3
+            covid_lives = 3
+            window.blit(assets['capa'],(0,0))
+            pygame.display.update()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    state = DONE
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        state = PLAYING
 
+        while state == FINAL:
+            window.blit(assets['balloon_img'],(0,0))
+            pygame.display.update()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    state = DONE
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        state = INICIO         
+               
+
+        
         if state == PLAYING:
+            
         # --- Trata colisões
             col_1 = pygame.sprite.spritecollide(balao, aguias, True, pygame.sprite.collide_mask)
             for aguia in col_1:
@@ -375,7 +411,7 @@ def game_screen(window):
                 all_sprites.add(player)
                 state = EXPLODING
                 keys_down = {}
-                pygame.mixer.music.stop()
+                
                 explosion_tick = pygame.time.get_ticks()
                 explosion_duration = player.frame_ticks * len(player.animation) + 400
             
@@ -402,7 +438,7 @@ def game_screen(window):
             now = pygame.time.get_ticks()
             if now - explosion_tick > explosion_duration:
                 if lives == 0:
-                    state = DONE
+                    state = FINAL
                 else:
                     state = PLAYING
                     balao = Balao(groups, assets)
