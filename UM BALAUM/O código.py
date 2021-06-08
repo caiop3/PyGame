@@ -41,7 +41,7 @@ def load_assets():
     assets['gel_img'] = pygame.transform.scale(assets['gel_img'], (20, 20))
 
     assets["score_font"] = pygame.font.Font('Efeitos/baloni.ttf', 38)
-    assets["life_font"] = pygame.font.Font('Efeitos/baloni.ttf', 8)
+    assets["life_font"] = pygame.font.Font('Efeitos/baloni.ttf', 13)
     assets["lives_font"] = pygame.font.Font('Efeitos/arcade.ttf', 28)
 
     # --- Importa o som de fundo
@@ -308,8 +308,8 @@ def game_screen(window):
     covid_lives = 3
     keys_down = {}
 
-    lives_text = assets['life_font'].render('{:04d}'.format(lives), True, (0, 255, 255))
-    lives_text = pygame.transform.scale(lives_text, (20, 20))
+    lives_text = assets['life_font'].render('{:04d}'.format(lives), True, (255, 0, 0))
+    # lives_text = pygame.transform.scale(lives_text, (20, 20))
     # text_rect_l = lives_text.get_rect()
 
     # --- Cria o jogador (balão)
@@ -466,8 +466,7 @@ def game_screen(window):
         # Desenha todos os sprites
         all_sprites.draw(window)
 
-        lives_text = assets['life_font'].render('{:04d}'.format(lives), True, (0, 255, 255))
-        lives_text = pygame.transform.scale(lives_text, (20, 20))
+        lives_text = assets['life_font'].render('{:04d}'.format(lives), True, (255, 0, 0))
 
         text_surface = assets['score_font'].render("{:09d}".format(score), True, (0, 0, 255))
         text_rect = text_surface.get_rect()
@@ -484,6 +483,3 @@ def game_screen(window):
 game_screen(window)
 # ===== FINALIZAÇÃO =====
 pygame.quit()  # Finaliza os recursos utilizados
-
-
-
