@@ -447,10 +447,10 @@ def game_screen(window):
         move_image_2 -= 2
 
         # Plota novamente após sair da tela
-        if move_image_2 <= -HEIGHT:
-            move_image_2 = HEIGHT
         if move_image_1 <= -HEIGHT:
             move_image_1 = HEIGHT
+        if move_image_2 <= -HEIGHT:
+            move_image_2 = HEIGHT
 
         # Desenha todos os sprites
         all_sprites.draw(window)

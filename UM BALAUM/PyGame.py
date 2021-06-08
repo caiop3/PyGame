@@ -13,14 +13,15 @@ WIDTH = 500
 HEIGHT = 400
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('UM BALAUM')
-FPS = 40
+font = pygame.font.SysFont('baloni.ttf', 48)
+FPS = 30
 
 STILL = 0
 
 # --- Importa imagem de fundo e os ícones
 def load_assets():
     assets = {}
-
+   
     assets['image'] = pygame.image.load('Efeitos/sky3.png').convert()
     assets['image'] = pygame.transform.scale(assets['image'], (500, 400))
 
@@ -40,6 +41,7 @@ def load_assets():
     assets['gel_img'] = pygame.transform.scale(assets['gel_img'], (20, 20))
 
     assets["score_font"] = pygame.font.Font('Efeitos/baloni.ttf', 38)
+    assets["life_font"] = pygame.font.Font('Efeitos/baloni.ttf', 13)
     assets["lives_font"] = pygame.font.Font('Efeitos/arcade.ttf', 28)
 
     # --- Importa o som de fundo
@@ -105,13 +107,30 @@ class Balao(pygame.sprite.Sprite):
             self.rect.top = 0
         if self.rect.bottom > HEIGHT:
             self.rect.bottom = HEIGHT
-    
+            
     def shoot(self):
-        # A nova bala vai ser criada logo acima e no centro horizontal da nave
+        # A nova bala vai ser criada logo embaixo e no centro do balão
         gel = Gel(self.assets, self.rect.bottom, self.rect.centerx)
         self.groups['all_sprites'].add(gel)
         self.groups['gels'].add(gel)
         self.assets['pop_sound'].play()
+
+class Life(pygame.sprite.Sprite):
+    def __init__(self, life):
+
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = life
+        self.rect = self.image.get_rect()
+        self.rect.centerx = WIDTH / 2
+        self.rect.bottom = (HEIGHT / 2) - 45
+        self.speedx = 0
+        self.speedy = 0
+    
+    def update(self):
+
+        self.rect.x += self.speedx
+        self.rect.y += self.speedy
 
 # --- Cria as classes das águias, uma para cada águia dependendo do lado da tela em que surge        
 class Eagle1(pygame.sprite.Sprite):
@@ -283,10 +302,22 @@ def game_screen(window):
     groups['aguias'] = aguias
     groups['covides'] = covides
     groups['gels'] = gels
+    
+    score = 0
+    lives = 3
+    covid_lives = 3
+    keys_down = {}
+
+    lives_text = assets['life_font'].render('{:04d}'.format(lives), True, (255, 0, 0))
+    # lives_text = pygame.transform.scale(lives_text, (20, 20))
+    # text_rect_l = lives_text.get_rect()
 
     # --- Cria o jogador (balão)
     balao = Balao(groups, assets)
     all_sprites.add(balao)
+
+    balloon_life = Life(lives_text)
+    all_sprites.add(balloon_life)
 
     # --- Cria as covides
     covid = Covid(assets)
@@ -310,11 +341,6 @@ def game_screen(window):
     EXPLODING = 2
     state = PLAYING
 
-    score = 0
-    lives = 3
-    covid_lives = 3
-    keys_down = {}
-
     # ===== LOOP PRRINCIPAL =====    
     assets['music'].play(loops=-1)
     while state != DONE:
@@ -331,12 +357,16 @@ def game_screen(window):
                     keys_down[event.key] = True
                     if event.key == pygame.K_LEFT:
                         balao.speedx -= 5
+                        balloon_life.speedx -= 5
                     if event.key == pygame.K_RIGHT:
                         balao.speedx += 5
+                        balloon_life.speedx += 5
                     if event.key == pygame.K_UP:
                         balao.speedy -= 3.5
+                        balloon_life.speedy -= 3.5
                     if event.key == pygame.K_DOWN:
                         balao.speedy += 3.5
+                        balloon_life.speedy += 3.5
                     if event.key == pygame.K_SPACE: # Atira álcool em gel
                         balao.shoot()
                 # Verifica se soltou alguma tecla
@@ -345,12 +375,16 @@ def game_screen(window):
                     if event.key in keys_down and keys_down[event.key]:
                         if event.key == pygame.K_LEFT:
                             balao.speedx += 5
+                            balloon_life.speedx += 5
                         if event.key == pygame.K_RIGHT:
                             balao.speedx -= 5
+                            balloon_life.speedx -= 5
                         if event.key == pygame.K_UP:
                             balao.speedy += 3.5
+                            balloon_life.speedy += 3.5
                         if event.key == pygame.K_DOWN:
                             balao.speedy -= 3.5
+                            balloon_life.speedy -= 3.5
 
         # --- Atualiza os sprites
         all_sprites.update()
@@ -372,6 +406,7 @@ def game_screen(window):
             if len(col_1) > 0:
                 assets['boom_sound'].play()
                 balao.kill()
+                balloon_life.kill()
                 lives -= 1
                 player = Player(balao.rect.center, assets['player_sheet'])
                 all_sprites.add(player)
@@ -410,6 +445,9 @@ def game_screen(window):
                     assets['music'].play()
                     balao = Balao(groups, assets)
                     all_sprites.add(balao)
+                    balloon_life = Life(lives_text)
+                    all_sprites.add(balloon_life)
+
         # --- Saídas
         window.fill((0, 0, 0)) # Preenche com a cor branca
         window.blit(assets['image'], (0,move_image_1)) 
@@ -428,6 +466,8 @@ def game_screen(window):
         # Desenha todos os sprites
         all_sprites.draw(window)
 
+        lives_text = assets['life_font'].render('{:04d}'.format(lives), True, (255, 0, 0))
+
         text_surface = assets['score_font'].render("{:09d}".format(score), True, (0, 0, 255))
         text_rect = text_surface.get_rect()
         text_rect.midtop = (WIDTH / 2,  0)
@@ -443,6 +483,3 @@ def game_screen(window):
 game_screen(window)
 # ===== FINALIZAÇÃO =====
 pygame.quit()  # Finaliza os recursos utilizados
-
-
-
