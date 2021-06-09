@@ -171,7 +171,7 @@ def game_screen(window, fase):
                     balao.lives += 3
                     score += 200 
 
-            if score >= 100:
+            if score >= 1500:
                 # assets[GECOV_SOUND].play()
                 assets[MUSIC].stop()
                 assets[LEVEL_UP_SOUND].play()
