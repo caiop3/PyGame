@@ -16,10 +16,9 @@ Sua missão é ajudar esse pesquisador a manter o seu balão cheio!
 
 ----- Instruções ------
 Aperte a tecla espaço para iniciar o jogo;
-use as setas do teclado para se movimentar;
-use a tecla espaço durante o jogo para jogar alcool em gel.
+Use as setas do teclado para se movimentar;
+Use a tecla espaço durante o jogo para jogar álcool em gel e matar o Covid.
 
 -----------------------
-
-Como rodar o código: tendo-se as dependências necessárias previamente instaladas, como o pygame, para conseguir rodar o código no seu PC, abra a pasta UM BALAUM e, dentro dela, execute o arquivo chamado de "code.py".
+Como rodar o código: tendo-se as dependências necessárias previamente instaladas, como o pygame, para conseguir rodar o código no seu PC, abra a pasta UM BALAUM e, dentro dela, execute o arquivo chamado de "coded.py".
 
