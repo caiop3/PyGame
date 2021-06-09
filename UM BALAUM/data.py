@@ -2,8 +2,8 @@ from os import path
 
 IMG_DIR = path.join(path.dirname(__file__), 'Efeitos')
 
-WIDTH = 500
-HEIGHT = 400
+WIDTH = 900
+HEIGHT = 600
 FPS = 30
 
 BALLOON_WIDTH = 40

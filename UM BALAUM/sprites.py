@@ -14,17 +14,17 @@ class Covid(pygame.sprite.Sprite):
         # self.rect.x = -1000
         # self.rect.y = randint(80, 380)
         # self.speed_x = 5
-        self.rect.x = randint(60, 420)
-        self.rect.y = choice([800, 1000, 1200])
-        self.speed_y = randint(6, 6)
+        self.rect.x = randint(60, 520)
+        self.rect.y = choice([1000, 1200, 1400])
+        self.speed_y = randint(4, 6)
 
     def update(self):
 
         self.rect.y -= self.speed_y 
 
         if self.rect.top < -850:
-            self.rect.x = randint(60, 420)
-            self.rect.y = choice([800, 1000, 1200])
+            self.rect.x = randint(60, 520)
+            self.rect.y = choice([1000, 1200, 1400])
             self.speed_y = randint(4, 6)
 
 # --- Cria a classe do balão, que será movimentado pelo jogador
@@ -106,7 +106,7 @@ class Eagle1(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = -50
-        self.rect.y = randint(200, 300)
+        self.rect.y = randint(200, 400)
         self.speed_x = randint(2, 6)
         self.speed_y = randint(-7, 4)
     
@@ -115,9 +115,9 @@ class Eagle1(pygame.sprite.Sprite):
         self.rect.x += self.speed_x
         self.rect.y += self.speed_y
 
-        if self.rect.top > 400 or self.rect.left > 500:
+        if self.rect.top > 600 or self.rect.left > 900:
             self.rect.x = -50
-            self.rect.y = randint(200, 300)
+            self.rect.y = randint(200, 400)
             self.speed_x = randint(2, 6)
             self.speed_y = randint(-7, 4)
 
@@ -128,8 +128,8 @@ class Eagle2(pygame.sprite.Sprite):
         self.image = assets[EAGLE2_IMG]
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
-        self.rect.x = 550
-        self.rect.y = randint(200, 300)
+        self.rect.x = 950
+        self.rect.y = randint(200, 400)
         self.speed_x = randint(2, 6)
         self.speed_y = randint(-7, 4)
     
@@ -138,9 +138,9 @@ class Eagle2(pygame.sprite.Sprite):
         self.rect.x -= self.speed_x
         self.rect.y += self.speed_y
 
-        if self.rect.top > 400 or self.rect.right < -50:
-            self.rect.x = 550
-            self.rect.y = randint(200, 300)
+        if self.rect.top > 600 or self.rect.right < -50:
+            self.rect.x = 950
+            self.rect.y = randint(200, 400)
             self.speed_x = randint(2, 6)
             self.speed_y = randint(-7, 4)
 
