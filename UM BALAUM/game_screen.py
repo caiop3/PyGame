@@ -1,10 +1,11 @@
 import pygame
-from reference import load_assets, IMAGE, MUSIC, LIFE_FONT, SCORE_FONT, LIVES_FONT, EAGLE_SOUND, BOOM_SOUND, PLAYER_SHEET
+import time
+from reference import load_assets, IMAGE, MUSIC, LIFE_FONT, SCORE_FONT, LIVES_FONT, EAGLE_SOUND, BOOM_SOUND, PLAYER_SHEET, BACOV_SOUND, GECOV_SOUND, LEVEL_UP_SOUND
 from sprites import Covid, Balao, Life, Eagle1, Eagle2, Gel, load_spritesheet, Player
-from data import WIDTH, HEIGHT, FPS, OVER
+from data import WIDTH, HEIGHT, FPS, OVER, GAME, PASS, WIN
 
 # --- Cria um grupo de sprites geral e para cada obstáculo
-def game_screen(window):
+def game_screen(window, fase):
 
     assets = load_assets()
     
@@ -25,7 +26,7 @@ def game_screen(window):
     score = 0
     lives = 3
     init_balife = 5
-    covid_lives = 1
+    covid_lives = 2
     keys_down = {}
 
     # lives_text = assets[LIFE_FONT].render('{:04d}'.format(lives), True, (255, 0, 0))
@@ -44,8 +45,16 @@ def game_screen(window):
     all_sprites.add(covid)
     covides.add(covid)
 
+    eagles_qtd = 0
+    if fase == 1:
+        eagles_qtd = 40
+    elif fase == 2:
+        eagles_qtd = 55
+    elif fase == 3:
+        eagles_qtd = 70
+
     # --- Cria as águias e suas quantidades 
-    for i in range(50):
+    for i in range(eagles_qtd):
         eagle1 = Eagle1(assets)
         eagle2 = Eagle2(assets)
         all_sprites.add(eagle1)
@@ -115,7 +124,7 @@ def game_screen(window):
             col_1 = pygame.sprite.spritecollide(balao, aguias, True, pygame.sprite.collide_mask)
             for aguia in col_1:
                 balao.lives -= 1
-                score -= 50
+                score -= 10
                 if aguia == eagle1:
                     eagle1 = Eagle1(assets)
                     all_sprites.add(eagle1)
@@ -127,7 +136,7 @@ def game_screen(window):
 
             if len(col_1) > 0:
                 assets[EAGLE_SOUND].play()
-                if balao.lives == 0:
+                if balao.lives <= 0:
                     lives -= 1
                     balloon_life.kill()
                     balao.kill()
@@ -141,23 +150,37 @@ def game_screen(window):
             
             col_2 = pygame.sprite.spritecollide(balao, covides, True, pygame.sprite.collide_mask)
             for covid in col_2:
+                assets[BACOV_SOUND].play()
                 covid = Covid(assets)
                 all_sprites.add(covid)
                 covides.add(covid)
                 balao.lives -= 2
-                score -= 100
+                score -= 50
 
             col_3 = pygame.sprite.spritecollide(covid, gels, True, pygame.sprite.collide_mask)
             for gel in col_3:
                 covid_lives -= 1
+                assets[GECOV_SOUND].play()
                 if covid_lives == 0:
                     covid.kill()
+                    gel.kill()
                     covid = Covid(assets)
                     all_sprites.add(covid)
                     covides.add(covid)
                     covid_lives = 1
                     balao.lives += 3
-                    score += 200  
+                    score += 200 
+
+            if score >= 100:
+                # assets[GECOV_SOUND].play()
+                assets[MUSIC].stop()
+                assets[LEVEL_UP_SOUND].play()
+                time.sleep(1.5)
+                if fase < 3:
+                    state = PASS
+                else:
+                    state = WIN
+                return state
 
         elif state == EXPLODING:
             assets[MUSIC].stop()
@@ -197,6 +220,11 @@ def game_screen(window):
         text_surface = assets[SCORE_FONT].render("{:08d}".format(score), True, (0, 0, 255))
         text_rect = text_surface.get_rect()
         text_rect.midtop = (WIDTH / 2,  0)
+        window.blit(text_surface, text_rect)
+
+        text_surface = assets[SCORE_FONT].render("FASE {0}".format(fase), True, (0, 255, 0))
+        text_rect = text_surface.get_rect()
+        text_rect.bottomright = (WIDTH - 10, HEIGHT - 10)
         window.blit(text_surface, text_rect)
 
         text_surface = assets[LIVES_FONT].render(chr(9829) * lives, True, (255, 0, 0))

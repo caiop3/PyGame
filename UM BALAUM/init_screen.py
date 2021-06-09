@@ -1,6 +1,6 @@
 import pygame
 import os
-from data import WIDTH, HEIGHT, IMG_DIR, FPS, INIT, GAME, QUIT
+from data import WIDTH, HEIGHT, IMG_DIR, FPS, INIT, GAME, QUIT, START
 
 def init_screen(screen):
 
@@ -8,7 +8,7 @@ def init_screen(screen):
 
     init_screen = pygame.image.load(os.path.join(IMG_DIR, 'sky_capa.png')).convert()
     init_screen = pygame.transform.scale(init_screen, (WIDTH, HEIGHT))
-
+    
     start = True
     while start:
 
@@ -22,7 +22,7 @@ def init_screen(screen):
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
-                    state = GAME
+                    state = START
                     start = False
         
         screen.blit(init_screen, (0,0))

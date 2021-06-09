@@ -15,7 +15,7 @@ class Covid(pygame.sprite.Sprite):
         # self.rect.y = randint(80, 380)
         # self.speed_x = 5
         self.rect.x = randint(60, 520)
-        self.rect.y = choice([1000, 1200, 1400])
+        self.rect.y = choice([800, 1000, 1200])
         self.speed_y = randint(1, 3)
 
     def update(self):
@@ -24,7 +24,7 @@ class Covid(pygame.sprite.Sprite):
 
         if self.rect.top < -850:
             self.rect.x = randint(60, 520)
-            self.rect.y = choice([1000, 1200, 1400])
+            self.rect.y = choice([800, 1000, 1200])
             self.speed_y = randint(1, 3)
 
 # --- Cria a classe do balão, que será movimentado pelo jogador
@@ -108,7 +108,7 @@ class Eagle1(pygame.sprite.Sprite):
         self.rect.x = -50
         self.rect.y = randint(200, 400)
         self.speed_x = randint(2, 6)
-        self.speed_y = randint(-7, 4)
+        self.speed_y = randint(-7, 7)
     
     def update(self):
 
@@ -119,7 +119,7 @@ class Eagle1(pygame.sprite.Sprite):
             self.rect.x = -50
             self.rect.y = randint(200, 400)
             self.speed_x = randint(2, 6)
-            self.speed_y = randint(-7, 4)
+            self.speed_y = randint(-7, 7)
 
 class Eagle2(pygame.sprite.Sprite):
     def __init__(self, assets):
@@ -131,7 +131,7 @@ class Eagle2(pygame.sprite.Sprite):
         self.rect.x = 950
         self.rect.y = randint(200, 400)
         self.speed_x = randint(2, 6)
-        self.speed_y = randint(-7, 4)
+        self.speed_y = randint(-7, 7)
     
     def update(self):
 
@@ -142,7 +142,7 @@ class Eagle2(pygame.sprite.Sprite):
             self.rect.x = 950
             self.rect.y = randint(200, 400)
             self.speed_x = randint(2, 6)
-            self.speed_y = randint(-7, 4)
+            self.speed_y = randint(-7, 7)
 
 # --- Cria classe para o gel, que pode matar o covid 
 class Gel(pygame.sprite.Sprite):

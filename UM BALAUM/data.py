@@ -25,5 +25,8 @@ INIT = 0
 GAME = 1
 QUIT = 2
 OVER = 3
+PASS = 4
+START = 5
+WIN = 6
 
 STILL = 0

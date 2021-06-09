@@ -20,6 +20,9 @@ MUSIC = 'music'
 BOOM_SOUND = 'boom_sound'
 POP_SOUND = 'pop_sound'
 EAGLE_SOUND = 'eagle_sound'
+BACOV_SOUND = 'bacov_sound'
+GECOV_SOUND = 'gecov_sound'
+LEVEL_UP_SOUND = 'level_up_sound'
 PLAYER_SHEET = 'player_sheet'
 
 def load_assets():
@@ -47,6 +50,11 @@ def load_assets():
     assets[POP_SOUND] = pygame.mixer.Sound(os.path.join(IMG_DIR, 'pop.ogg'))
     assets[EAGLE_SOUND] = pygame.mixer.Sound(os.path.join(IMG_DIR, 'es.wav'))
     assets[EAGLE_SOUND].set_volume(0.2)
+    assets[BACOV_SOUND] = pygame.mixer.Sound(os.path.join(IMG_DIR, 'contam.wav'))
+    assets[BACOV_SOUND].set_volume(0.2)
+    assets[GECOV_SOUND] = pygame.mixer.Sound(os.path.join(IMG_DIR, '1up.mp3'))
+    assets[LEVEL_UP_SOUND] = pygame.mixer.Sound(os.path.join(IMG_DIR, 'level_up.wav'))
+    assets[LEVEL_UP_SOUND].set_volume(0.2)
     # --- Arquivo para animação
     assets[PLAYER_SHEET] = pygame.image.load(os.path.join(IMG_DIR, 'ex.png')).convert_alpha()
     return assets

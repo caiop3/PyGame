@@ -315,8 +315,6 @@ def game_screen(window):
     INICIO = 3
     state = 3
     FINAL = 4
-
-    song = 0
     
     keys_down = {}
     pygame.mixer.music.play()
