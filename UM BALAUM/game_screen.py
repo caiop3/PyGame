@@ -25,7 +25,7 @@ def game_screen(window):
     score = 0
     lives = 3
     init_balife = 5
-    covid_lives = 3
+    covid_lives = 1
     keys_down = {}
 
     # lives_text = assets[LIFE_FONT].render('{:04d}'.format(lives), True, (255, 0, 0))
@@ -45,7 +45,7 @@ def game_screen(window):
     covides.add(covid)
 
     # --- Cria as águias e suas quantidades 
-    for i in range(12):
+    for i in range(50):
         eagle1 = Eagle1(assets)
         eagle2 = Eagle2(assets)
         all_sprites.add(eagle1)
@@ -155,7 +155,7 @@ def game_screen(window):
                     covid = Covid(assets)
                     all_sprites.add(covid)
                     covides.add(covid)
-                    covid_lives = 3
+                    covid_lives = 1
                     balao.lives += 3
                     score += 200  
 
