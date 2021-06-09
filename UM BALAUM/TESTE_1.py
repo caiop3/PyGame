@@ -49,6 +49,8 @@ def load_assets():
     assets['music'] = pygame.mixer.music
     assets['boom_sound'] = pygame.mixer.Sound('Efeitos/boom.flac')
     assets['pop_sound'] = pygame.mixer.Sound('Efeitos/pop.ogg')
+    assets['eagle_sound'] = pygame.mixer.Sound('Efeitos/es.wav')
+    assets['eagle_sound'].set_volume(0.2)
 
     # --- Arquivo para animação
     img_dir = path.join(path.dirname(__file__), 'Efeitos')
@@ -407,17 +409,20 @@ def game_screen(window):
                     eagle2 = Eagle2(assets)
                     all_sprites.add(eagle2) 
                     aguias.add(eagle2)
-
+    # balao.kill()
+    # balloon_life.kill()
             if len(col_1) > 0:
-                assets['boom_sound'].play()
-                # balao.kill()
-                # balloon_life.kill()
-                player = Player(balao.rect.center, assets['player_sheet'])
-                all_sprites.add(player)
-                state = EXPLODING
-                keys_down = {}
-                explosion_tick = pygame.time.get_ticks()
-                explosion_duration = player.frame_ticks * len(player.animation) + 400
+                assets['eagle_sound'].play()
+                if balao.lives == 0:
+                    balloon_life.kill()
+                    balao.kill()
+                    assets['boom_sound'].play()
+                    player = Player(balao.rect.center, assets['player_sheet'])
+                    all_sprites.add(player)
+                    state = EXPLODING
+                    keys_down = {}
+                    explosion_tick = pygame.time.get_ticks()
+                    explosion_duration = player.frame_ticks * len(player.animation) + 400
             
             col_2 = pygame.sprite.spritecollide(balao, covides, True, pygame.sprite.collide_mask)
             for covid in col_2:

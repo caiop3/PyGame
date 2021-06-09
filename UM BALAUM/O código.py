@@ -1,6 +1,5 @@
 # ===== INÍCIO =====
 # --- Importações e pacotes do pygame  
-
 import pygame
 import random
 import time
