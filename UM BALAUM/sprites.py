@@ -1,5 +1,5 @@
 import pygame
-import random
+from random import *
 from reference import COVID_IMG, BALLOON_IMG, GEL_IMG, EAGLE1_IMG, EAGLE2_IMG, POP_SOUND
 from data import WIDTH, HEIGHT, STILL
 # --- Cria a classe Covid
@@ -11,22 +11,25 @@ class Covid(pygame.sprite.Sprite):
         self.image = assets[COVID_IMG]
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
-        self.rect.x = -1000
-        self.rect.y = random.randint(80, 380)
-        self.speed_x = 5
+        # self.rect.x = -1000
+        # self.rect.y = randint(80, 380)
+        # self.speed_x = 5
+        self.rect.x = randint(60, 420)
+        self.rect.y = choice([800, 1000, 1200])
+        self.speed_y = randint(6, 6)
 
     def update(self):
 
-        self.rect.x += self.speed_x
+        self.rect.y -= self.speed_y 
 
-        if self.rect.right > 1000:
-            self.rect.x = -100
-            self.rect.y = random.randint(200, 300)
-            self.speed_x = 5
+        if self.rect.top < -850:
+            self.rect.x = randint(60, 420)
+            self.rect.y = choice([800, 1000, 1200])
+            self.speed_y = randint(4, 6)
 
 # --- Cria a classe do balão, que será movimentado pelo jogador
 class Balao(pygame.sprite.Sprite):
-    def __init__(self,groups,assets):
+    def __init__(self,groups,assets,lives):
 
         pygame.sprite.Sprite.__init__(self)
 
@@ -39,6 +42,10 @@ class Balao(pygame.sprite.Sprite):
         self.speedy = 0
         self.groups = groups
         self.assets = assets
+        self.lives = lives
+
+        self.shot = pygame.time.get_ticks()
+        self.shot_tick = 200
 
     def update(self):
         # Atualiza da posição do balão
@@ -57,27 +64,38 @@ class Balao(pygame.sprite.Sprite):
             
     def shoot(self):
         # A nova bala vai ser criada logo embaixo e no centro do balão
-        gel = Gel(self.assets, self.rect.bottom, self.rect.centerx)
-        self.groups['all_sprites'].add(gel)
-        self.groups['gels'].add(gel)
-        self.assets[POP_SOUND].play()
+        now = pygame.time.get_ticks()
+
+        elapsed_ticks = now - self.shot
+
+        if elapsed_ticks > self.shot_tick:
+            self.shot = now
+            # A nova bala vai ser criada logo embaixo e no centro do balão
+            gel = Gel(self.assets, self.rect.bottom, self.rect.centerx)
+            self.groups['all_sprites'].add(gel)
+            self.groups['gels'].add(gel)
+            self.assets['pop_sound'].play()
 
 class Life(pygame.sprite.Sprite):
-    def __init__(self, life):
+    def __init__(self, balao, assets):
 
         pygame.sprite.Sprite.__init__(self)
 
+        self.balao = balao
+        self.assets = assets
+        life = self.assets['life_font'].render('{:04d}'.format(self.balao.lives), True, (255, 255, 0))
         self.image = life
         self.rect = self.image.get_rect()
-        self.rect.centerx = WIDTH / 2
-        self.rect.bottom = (HEIGHT / 2) - 45
-        self.speedx = 0
-        self.speedy = 0
+        self.rect.centerx = self.balao.rect.centerx
+        self.rect.bottom =  self.balao.rect.bottom - 47
     
     def update(self):
 
-        self.rect.x += self.speedx
-        self.rect.y += self.speedy
+        life = self.assets['life_font'].render('{:04d}'.format(self.balao.lives), True, (255, 255, 0))
+        self.image = life
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.balao.rect.centerx
+        self.rect.bottom = self.balao.rect.bottom - 47
 
 # --- Cria as classes das águias, uma para cada águia dependendo do lado da tela em que surge        
 class Eagle1(pygame.sprite.Sprite):
@@ -88,9 +106,9 @@ class Eagle1(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = -50
-        self.rect.y = random.randint(200, 300)
-        self.speed_x = random.randint(2, 6)
-        self.speed_y = random.randint(-7, 4)
+        self.rect.y = randint(200, 300)
+        self.speed_x = randint(2, 6)
+        self.speed_y = randint(-7, 4)
     
     def update(self):
 
@@ -99,9 +117,9 @@ class Eagle1(pygame.sprite.Sprite):
 
         if self.rect.top > 400 or self.rect.left > 500:
             self.rect.x = -50
-            self.rect.y = random.randint(200, 300)
-            self.speed_x = random.randint(2, 6)
-            self.speed_y = random.randint(-7, 4)
+            self.rect.y = randint(200, 300)
+            self.speed_x = randint(2, 6)
+            self.speed_y = randint(-7, 4)
 
 class Eagle2(pygame.sprite.Sprite):
     def __init__(self, assets):
@@ -111,9 +129,9 @@ class Eagle2(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = 550
-        self.rect.y = random.randint(200, 300)
-        self.speed_x = random.randint(2, 6)
-        self.speed_y = random.randint(-7, 4)
+        self.rect.y = randint(200, 300)
+        self.speed_x = randint(2, 6)
+        self.speed_y = randint(-7, 4)
     
     def update(self):
 
@@ -122,9 +140,9 @@ class Eagle2(pygame.sprite.Sprite):
 
         if self.rect.top > 400 or self.rect.right < -50:
             self.rect.x = 550
-            self.rect.y = random.randint(200, 300)
-            self.speed_x = random.randint(2, 6)
-            self.speed_y = random.randint(-7, 4)
+            self.rect.y = randint(200, 300)
+            self.speed_x = randint(2, 6)
+            self.speed_y = randint(-7, 4)
 
 # --- Cria classe para o gel, que pode matar o covid 
 class Gel(pygame.sprite.Sprite):

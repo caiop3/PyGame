@@ -19,6 +19,7 @@ LIVES_FONT = 'lives_font'
 MUSIC = 'music'
 BOOM_SOUND = 'boom_sound'
 POP_SOUND = 'pop_sound'
+EAGLE_SOUND = 'eagle_sound'
 PLAYER_SHEET = 'player_sheet'
 
 def load_assets():
@@ -44,6 +45,8 @@ def load_assets():
     assets[MUSIC] = pygame.mixer.music
     assets[BOOM_SOUND] = pygame.mixer.Sound(os.path.join(IMG_DIR, 'boom.flac'))
     assets[POP_SOUND] = pygame.mixer.Sound(os.path.join(IMG_DIR, 'pop.ogg'))
+    assets[EAGLE_SOUND] = pygame.mixer.Sound(os.path.join(IMG_DIR, 'es.wav'))
+    assets[EAGLE_SOUND].set_volume(0.2)
     # --- Arquivo para animação
     assets[PLAYER_SHEET] = pygame.image.load(os.path.join(IMG_DIR, 'ex.png')).convert_alpha()
     return assets
