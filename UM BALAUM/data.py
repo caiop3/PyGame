@@ -24,5 +24,6 @@ GEL_HEIGHT = 20
 INIT = 0
 GAME = 1
 QUIT = 2
+OVER = 3
 
 STILL = 0

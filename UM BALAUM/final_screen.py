@@ -2,12 +2,12 @@ import pygame
 import os
 from data import WIDTH, HEIGHT, IMG_DIR, FPS, INIT, GAME, QUIT
 
-def init_screen(screen):
+def final_screen(screen):
 
     clock = pygame.time.Clock()
 
-    init_screen = pygame.image.load(os.path.join(IMG_DIR, 'sky_capa.png')).convert()
-    init_screen = pygame.transform.scale(init_screen, (WIDTH, HEIGHT))
+    final_screen = pygame.image.load(os.path.join(IMG_DIR, 'sky_fim.png')).convert()
+    final_screen = pygame.transform.scale(final_screen, (WIDTH, HEIGHT))
 
     start = True
     while start:
@@ -25,14 +25,8 @@ def init_screen(screen):
                     state = GAME
                     start = False
         
-        screen.blit(init_screen, (0,0))
+        screen.blit(final_screen, (0,0))
 
         pygame.display.flip()
     
     return state
-
-
-
-
-
-

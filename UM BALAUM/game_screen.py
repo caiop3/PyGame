@@ -1,7 +1,7 @@
 import pygame
 from reference import load_assets, IMAGE, MUSIC, LIFE_FONT, SCORE_FONT, LIVES_FONT, EAGLE_SOUND, BOOM_SOUND, PLAYER_SHEET
 from sprites import Covid, Balao, Life, Eagle1, Eagle2, Gel, load_spritesheet, Player
-from data import WIDTH, HEIGHT, FPS
+from data import WIDTH, HEIGHT, FPS, OVER
 
 # --- Cria um grupo de sprites geral e para cada obstáculo
 def game_screen(window):
@@ -137,7 +137,7 @@ def game_screen(window):
                     state = EXPLODING
                     keys_down = {}
                     explosion_tick = pygame.time.get_ticks()
-                    explosion_duration = player.frame_ticks * len(player.animation) + 500
+                    explosion_duration = player.frame_ticks * len(player.animation) + 450
             
             col_2 = pygame.sprite.spritecollide(balao, covides, True, pygame.sprite.collide_mask)
             for covid in col_2:
@@ -164,7 +164,8 @@ def game_screen(window):
             now = pygame.time.get_ticks()
             if now - explosion_tick > explosion_duration:
                 if lives == 0:
-                    state = DONE
+                    state = OVER
+                    return state
                 else:
                     state = PLAYING
                     assets[MUSIC].play()
