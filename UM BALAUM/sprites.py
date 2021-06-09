@@ -16,7 +16,7 @@ class Covid(pygame.sprite.Sprite):
         # self.speed_x = 5
         self.rect.x = randint(60, 520)
         self.rect.y = choice([1000, 1200, 1400])
-        self.speed_y = randint(4, 6)
+        self.speed_y = randint(1, 3)
 
     def update(self):
 
@@ -25,7 +25,7 @@ class Covid(pygame.sprite.Sprite):
         if self.rect.top < -850:
             self.rect.x = randint(60, 520)
             self.rect.y = choice([1000, 1200, 1400])
-            self.speed_y = randint(4, 6)
+            self.speed_y = randint(1, 3)
 
 # --- Cria a classe do balão, que será movimentado pelo jogador
 class Balao(pygame.sprite.Sprite):
