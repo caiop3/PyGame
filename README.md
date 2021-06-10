@@ -22,7 +22,7 @@ Aperte a tecla espaço para passar as telas e iniciar o jogo;
 Use as setas do teclado para se movimentar;
 Use a tecla espaço durante o jogo para jogar álcool em gel e matar o Covid.
 
------------------------
+---- Rodando o código ----
 
-Como rodar o código: tendo-se as dependências necessárias previamente instaladas, como o pygame, para conseguir rodar o código no seu PC, abra a pasta UM BALAUM e, dentro dela, execute o arquivo chamado de "coded.py". Divirta-se!
+Tendo-se as dependências necessárias previamente instaladas, como o pygame, para conseguir rodar o código no seu PC, abra a pasta UM BALAUM e, dentro dela, execute o arquivo chamado de "coded.py". Divirta-se!
 
