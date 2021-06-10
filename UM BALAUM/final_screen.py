@@ -1,7 +1,9 @@
+# --- Importações
 import pygame
 import os
 from data import WIDTH, HEIGHT, IMG_DIR, FPS, INIT, GAME, QUIT
 
+# --- Tela de game over
 def final_screen(screen):
 
     clock = pygame.time.Clock()
@@ -31,6 +33,7 @@ def final_screen(screen):
     
     return state
 
+# --- Tela de Você Ganhou!
 def win_screen(screen):
 
     clock = pygame.time.Clock()

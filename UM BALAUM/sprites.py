@@ -2,35 +2,12 @@ import pygame
 from random import *
 from reference import COVID_IMG, BALLOON_IMG, GEL_IMG, EAGLE1_IMG, EAGLE2_IMG, POP_SOUND
 from data import WIDTH, HEIGHT, STILL
-# --- Cria a classe Covid
-class Covid(pygame.sprite.Sprite):
-    def __init__(self, assets):
-            
-        pygame.sprite.Sprite.__init__(self)
-
-        self.image = assets[COVID_IMG]
-        self.mask = pygame.mask.from_surface(self.image)
-        self.rect = self.image.get_rect()
-        # self.rect.x = -1000
-        # self.rect.y = randint(80, 380)
-        # self.speed_x = 5
-        self.rect.x = randint(60, 520)
-        self.rect.y = choice([800, 1000, 1200])
-        self.speed_y = randint(1, 3)
-
-    def update(self):
-
-        self.rect.y -= self.speed_y 
-
-        if self.rect.top < -850:
-            self.rect.x = randint(60, 520)
-            self.rect.y = choice([800, 1000, 1200])
-            self.speed_y = randint(1, 3)
 
 # --- Cria a classe do balão, que será movimentado pelo jogador
 class Balao(pygame.sprite.Sprite):
+    """ Seta o balão"""
     def __init__(self,groups,assets,lives):
-
+        """Recebe e define dados iniciais do balão""" 
         pygame.sprite.Sprite.__init__(self)
 
         self.image = assets[BALLOON_IMG]
@@ -48,11 +25,10 @@ class Balao(pygame.sprite.Sprite):
         self.shot_tick = 200
 
     def update(self):
-        # Atualiza da posição do balão
+        """Atualiza a posição do balão e o mantém dentro da tela"""
         self.rect.x += self.speedx
         self.rect.y += self.speedy
 
-        # Mantem dentro da tela
         if self.rect.right > WIDTH:
             self.rect.right = WIDTH
         if self.rect.left < 0:
@@ -63,22 +39,22 @@ class Balao(pygame.sprite.Sprite):
             self.rect.bottom = HEIGHT
             
     def shoot(self):
-        # A nova bala vai ser criada logo embaixo e no centro do balão
+        """ Álcool em gel criado logo abaixo do balão"""
         now = pygame.time.get_ticks()
-
         elapsed_ticks = now - self.shot
 
         if elapsed_ticks > self.shot_tick:
             self.shot = now
-            # A nova bala vai ser criada logo embaixo e no centro do balão
             gel = Gel(self.assets, self.rect.bottom, self.rect.centerx)
             self.groups['all_sprites'].add(gel)
             self.groups['gels'].add(gel)
             self.assets['pop_sound'].play()
 
+# --- Cria classe para a vida do balão, que se movimenta em função do balão
 class Life(pygame.sprite.Sprite):
+    """Seta a vida do balão"""
     def __init__(self, balao, assets):
-
+        """Recebe e define dados iniciais da vida do balão""" 
         pygame.sprite.Sprite.__init__(self)
 
         self.balao = balao
@@ -90,6 +66,7 @@ class Life(pygame.sprite.Sprite):
         self.rect.bottom =  self.balao.rect.bottom - 47
     
     def update(self):
+        """Atualiza a posição da vida do balão de acordo com a posição do balão"""
 
         life = self.assets['life_font'].render('{:04d}'.format(self.balao.lives), True, (255, 255, 0))
         self.image = life
@@ -99,7 +76,9 @@ class Life(pygame.sprite.Sprite):
 
 # --- Cria as classes das águias, uma para cada águia dependendo do lado da tela em que surge        
 class Eagle1(pygame.sprite.Sprite):
+    """Seta as águias que surgirão do lado esquerdo da tela"""
     def __init__(self, assets):
+        """Recebe e define os dados iniciais dessas águias"""
         pygame.sprite.Sprite.__init__(self)
 
         self.image = assets[EAGLE1_IMG]
@@ -111,7 +90,7 @@ class Eagle1(pygame.sprite.Sprite):
         self.speed_y = randint(-7, 7)
     
     def update(self):
-
+        """Atualiza a posição dessas águias"""
         self.rect.x += self.speed_x
         self.rect.y += self.speed_y
 
@@ -122,7 +101,9 @@ class Eagle1(pygame.sprite.Sprite):
             self.speed_y = randint(-7, 7)
 
 class Eagle2(pygame.sprite.Sprite):
+    """Seta as águias que surgirão do lado direito da tela"""
     def __init__(self, assets):
+        """Recebe e define os dados iniciais dessas águias"""
         pygame.sprite.Sprite.__init__(self)
 
         self.image = assets[EAGLE2_IMG]
@@ -134,7 +115,7 @@ class Eagle2(pygame.sprite.Sprite):
         self.speed_y = randint(-7, 7)
     
     def update(self):
-
+        """Atualiza a posição dessas águias"""
         self.rect.x -= self.speed_x
         self.rect.y += self.speed_y
 
@@ -144,106 +125,98 @@ class Eagle2(pygame.sprite.Sprite):
             self.speed_x = randint(2, 6)
             self.speed_y = randint(-7, 7)
 
+# --- Cria a classe Covid, pensada como uma maneira do jogador interagir melhor com o jogo
+class Covid(pygame.sprite.Sprite):
+    """ Seta a(s) covid(es)"""
+    def __init__(self, assets):
+        """Recebe e define dados iniciais da covid""" 
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = assets[COVID_IMG]
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.x = randint(60, 520)
+        self.rect.y = choice([800, 1000, 1200])
+        self.speed_y = randint(1, 3)
+
+    def update(self):
+        """Atualiza a posição da covid"""
+        self.rect.y -= self.speed_y 
+
+        if self.rect.top < -850:
+            self.rect.x = randint(60, 520)
+            self.rect.y = choice([800, 1000, 1200])
+            self.speed_y = randint(1, 3)
+
 # --- Cria classe para o gel, que pode matar o covid 
 class Gel(pygame.sprite.Sprite):
+    """Seta gotas de álcool em gel"""
     def __init__(self, assets, bottom, centerx):
-        # Construtor da classe mãe (Sprite).
+        """Recebe e define os dados iniciais dessas gotas"""
         pygame.sprite.Sprite.__init__(self)
 
         self.image = assets[GEL_IMG]
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
 
-        # Coloca no lugar inicial definido em x, y do constutor
         self.rect.centerx = centerx
         self.rect.bottom = bottom
-        self.speedy = 10  # Velocidade fixa para cima
+        self.speedy = 10  
 
     def update(self):
+        """Atualiza a posição dessas"""
         self.rect.y += self.speedy
 
 def load_spritesheet(spritesheet, rows, columns):
-    # Calcula a largura e altura de cada sprite.
+    """Função que recebe um spritesheet e retorna os sprites que serão utilizados numa animação"""
     sprite_width = spritesheet.get_width() // columns
     sprite_height = spritesheet.get_height() // rows
     
-    # Percorre todos os sprites adicionando em uma lista.
     sprites = []
     for row in range(rows):
         for column in range(columns):
-            # Calcula posição do sprite atual
             x = column * sprite_width
             y = row * sprite_height
-            # Define o retângulo que contém o sprite atual
             dest_rect = pygame.Rect(x, y, sprite_width, sprite_height)
 
-            # Cria uma imagem vazia do tamanho do sprite
             image = pygame.Surface((sprite_width, sprite_height), pygame.SRCALPHA)
-            # Copia o sprite atual (do spritesheet) na imagem
             image.blit(spritesheet, (0, 0), dest_rect)
             sprites.append(image)
     return sprites
 
-# Classe Jogador que representa o herói
+# --- Classe da explosão do balão, que também representa a sua animação 
 class Player(pygame.sprite.Sprite):
-    
-    # Construtor da classe. O argumento player_sheet é uma imagem contendo um spritesheet.
+    """Seta uma ou várias animações"""
     def __init__(self, center, player_sheet):
-        
-        # Construtor da classe pai (Sprite).
+        """Recebe um spritesheet para a confecção da animação""" 
         pygame.sprite.Sprite.__init__(self)
         
-        # Aumenta o tamanho do spritesheet para ficar mais fácil de ver
         player_sheet = pygame.transform.scale(player_sheet, (640, 640))
-
-        # Define sequências de sprites de cada animação
         spritesheet = load_spritesheet(player_sheet, 8, 5)
         self.animations = {STILL: spritesheet[0:39]}
-        # Define estado atual (que define qual animação deve ser mostrada)
         self.state = STILL
-        # Define animação atual
         self.animation = self.animations[self.state]
-        # Inicializa o primeiro quadro da animação
         self.frame = 0
         self.image = self.animation[self.frame]
-        # Detalhes sobre o posicionamento.
         self.rect = self.image.get_rect()
         self.rect.center = center
-        # Centraliza na tela.
-        # self.rect.centerx = WIDTH / 2
-        # self.rect.centery = HEIGHT / 2
 
-        # Guarda o tick da primeira imagem
         self.last_update = pygame.time.get_ticks()
-
-        # Controle de ticks de animação: troca de imagem a cada self.frame_ticks milissegundos.
         self.frame_ticks = 30
         
-    # Metodo que atualiza a posição do personagem
     def update(self):
-        # Verifica o tick atual.
+        """Atualiza posição e frames da animação"""
         now = pygame.time.get_ticks()
-
-        # Verifica quantos ticks se passaram desde a ultima mudança de frame.
         elapsed_ticks = now - self.last_update
 
-        # Se já está na hora de mudar de imagem...
         if elapsed_ticks > self.frame_ticks:
-
-            # Marca o tick da nova imagem.
             self.last_update = now
-
-            # Avança um quadro.
             self.frame += 1
-
-            # Atualiza animação atual
             self.animation = self.animations[self.state]
             
             if self.frame == len(self.animation):
-                # Se sim, tchau explosão!
                 self.kill()
             else:
-                # Se ainda não chegou ao fim da explosão, troca de imagem.
                 center = self.rect.center
                 self.image = self.animation[self.frame]
                 self.rect = self.image.get_rect()

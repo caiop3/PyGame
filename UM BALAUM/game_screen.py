@@ -1,3 +1,4 @@
+# --- Importações
 import pygame
 import time
 from reference import load_assets, IMAGE, MUSIC, LIFE_FONT, SCORE_FONT, LIVES_FONT, EAGLE_SOUND, BOOM_SOUND, PLAYER_SHEET, BACOV_SOUND, GECOV_SOUND, LEVEL_UP_SOUND
@@ -7,9 +8,9 @@ from data import WIDTH, HEIGHT, FPS, OVER, GAME, PASS, WIN
 # --- Cria um grupo de sprites geral e para cada obstáculo
 def game_screen(window, fase):
 
-    assets = load_assets()
+    assets = load_assets() # Carrega assets
     
-    move_image_1 = 0
+    move_image_1 = 0 # Variáveis para se mover a imagem de fundo
     move_image_2 = HEIGHT
 
     all_sprites = pygame.sprite.Group()
@@ -27,11 +28,7 @@ def game_screen(window, fase):
     lives = 3
     init_balife = 5
     covid_lives = 2
-    keys_down = {}
-
-    # lives_text = assets[LIFE_FONT].render('{:04d}'.format(lives), True, (255, 0, 0))
-    # lives_text = pygame.transform.scale(lives_text, (20, 20))
-    # text_rect_l = lives_text.get_rect()
+    keys_down = {} # Evita possíveis bugs de teclas pressionadas
 
     # --- Cria o jogador (balão)
     balao = Balao(groups, assets, init_balife)
@@ -86,38 +83,29 @@ def game_screen(window, fase):
                     keys_down[event.key] = True
                     if event.key == pygame.K_LEFT:
                         balao.speedx -= 5
-                        # balloon_life.speedx -= 5
                     if event.key == pygame.K_RIGHT:
-                        balao.speedx += 5
-                        # balloon_life.speedx += 5
+                        balao.speedx += 5                  
                     if event.key == pygame.K_UP:
-                        balao.speedy -= 3.5
-                        # balloon_life.speedy -= 3.5
+                        balao.speedy -= 3.5               
                     if event.key == pygame.K_DOWN:
-                        balao.speedy += 3.5
-                        # balloon_life.speedy += 3.5
+                        balao.speedy += 3.5                    
                     if event.key == pygame.K_SPACE: # Atira álcool em gel
                         balao.shoot()
                 # Verifica se soltou alguma tecla
-                if event.type == pygame.KEYUP: # Dependendo da tecla, altera a velocidade
-                    
+                if event.type == pygame.KEYUP: # Dependendo da tecla, altera a velocidade                   
                     if event.key in keys_down and keys_down[event.key]:
                         if event.key == pygame.K_LEFT:
-                            balao.speedx += 5
-                            # balloon_life.speedx += 5
+                            balao.speedx += 5                     
                         if event.key == pygame.K_RIGHT:
-                            balao.speedx -= 5
-                            # balloon_life.speedx -= 5
+                            balao.speedx -= 5                
                         if event.key == pygame.K_UP:
-                            balao.speedy += 3.5
-                            # balloon_life.speedy += 3.5
+                            balao.speedy += 3.5               
                         if event.key == pygame.K_DOWN:
                             balao.speedy -= 3.5
-                            # balloon_life.speedy -= 3.5
+                            
 
         # --- Atualiza os sprites
         all_sprites.update()
-        #aguias.update()
 
         if state == PLAYING:
         # --- Trata colisões
@@ -172,7 +160,6 @@ def game_screen(window, fase):
                     score += 200 
 
             if score >= 1500:
-                # assets[GECOV_SOUND].play()
                 assets[MUSIC].stop()
                 assets[LEVEL_UP_SOUND].play()
                 time.sleep(1.5)
@@ -214,8 +201,6 @@ def game_screen(window, fase):
 
         # Desenha todos os sprites
         all_sprites.draw(window)
-
-        # lives_text = assets[LIFE_FONT].render('{:04d}'.format(lives), True, (255, 0, 0))
 
         text_surface = assets[SCORE_FONT].render("{:08d}".format(score), True, (0, 0, 255))
         text_rect = text_surface.get_rect()

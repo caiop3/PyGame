@@ -1,3 +1,4 @@
+# --- Importações
 import pygame
 import os
 from data import WIDTH, HEIGHT, BALLOON_WIDTH, BALLOON_HEIGHT, EAGLE1_WIDTH, EAGLE1_HEIGHT, EAGLE2_WIDTH, EAGLE2_HEIGHT, COVID_WIDTH, COVID_HEIGHT, GEL_WIDTH, GEL_HEIGHT, IMG_DIR
@@ -25,6 +26,7 @@ GECOV_SOUND = 'gecov_sound'
 LEVEL_UP_SOUND = 'level_up_sound'
 PLAYER_SHEET = 'player_sheet'
 
+# --- Função que retorna um dicionário com todas as imagens, sons e fontes necessários
 def load_assets():
     assets = {}
     assets[IMAGE] = pygame.image.load(os.path.join(IMG_DIR, 'sky3.png')).convert()

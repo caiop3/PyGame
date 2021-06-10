@@ -1,8 +1,10 @@
+# --- Importações
 import pygame
 import time
 import os
 from data import WIDTH, HEIGHT, IMG_DIR, FPS, INIT, GAME, QUIT, START
 
+# --- Tela de contexto do jogo
 def start_screen(screen):
 
     clock = pygame.time.Clock()
@@ -30,8 +32,7 @@ def start_screen(screen):
 
         pygame.display.flip()
 
-
-
+# --- Tela de instruções
 def start2_screen(screen):
 
     clock = pygame.time.Clock()

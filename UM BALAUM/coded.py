@@ -15,6 +15,7 @@ pygame.mixer.init()
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('UM BALAUM')
 
+# --- Loop principal da máquina de estados
 fase = 1
 state = INIT
 while state != QUIT:
@@ -38,4 +39,4 @@ while state != QUIT:
         state = QUIT
  
 # ===== Finalização =====
-pygame.quit()  # Função do PyGame que finaliza os recursos utilizados
+pygame.quit() 
