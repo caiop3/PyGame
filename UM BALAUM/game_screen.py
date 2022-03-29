@@ -8,14 +8,19 @@ from data import WIDTH, HEIGHT, FPS, OVER, GAME, PASS, WIN
 
 # assets = load_assets()
 # #Cria função para inicializar musica
-# def toca_som(nome_do_som):
-#     som = assets[nome_do_som]
-#     som.play()
+def toca_som(nome_do_som,boolean):
+    assets = load_assets()
+    som = assets[nome_do_som]
+    if boolean == True:
+        som.play(loops=-1)
+    else:
+        som.play()
 
 # #Cria função para pausar música
-# def pausa_som(nome_do_som):
-#     som = assets[nome_do_som]
-#     som.stop()
+def pausa_som(nome_do_som):
+    assets = load_assets()
+    som = assets[nome_do_som]
+    som.stop()
 
 # --- Cria um grupo de sprites geral e para cada obstáculo
 def game_screen(window, fase):
@@ -80,7 +85,7 @@ def game_screen(window, fase):
     state = PLAYING
 
     # ===== LOOP PRRINCIPAL =====    
-    assets[MUSIC].play(loops=-1)
+    toca_som(MUSIC, True)
     while state != DONE:
         clock.tick(FPS)
 
@@ -140,7 +145,7 @@ def game_screen(window, fase):
                     lives -= 1
                     balloon_life.kill()
                     balao.kill()
-                    assets[BOOM_SOUND].play()
+                    toca_som(BOOM_SOUND, False)
                     player = Player(balao.rect.center, assets['player_sheet'])
                     all_sprites.add(player)
                     state = EXPLODING
@@ -150,7 +155,7 @@ def game_screen(window, fase):
             
             col_2 = pygame.sprite.spritecollide(balao, covides, True, pygame.sprite.collide_mask)
             for covid in col_2:
-                assets[BACOV_SOUND].play()
+                toca_som(BACOV_SOUND, False)
                 covid = Covid(assets,COVID_IMG)
                 all_sprites.add(covid)
                 covides.add(covid)
@@ -160,7 +165,7 @@ def game_screen(window, fase):
             col_3 = pygame.sprite.spritecollide(covid, gels, True, pygame.sprite.collide_mask)
             for gel in col_3:
                 covid_lives -= 1
-                assets[GECOV_SOUND].play()
+                toca_som(GECOV_SOUND, False)
                 if covid_lives == 0:
                     covid.kill()
                     gel.kill()
@@ -172,8 +177,8 @@ def game_screen(window, fase):
                     score += 200 
 
             if score >= 1500:
-                assets[MUSIC].stop()
-                assets[LEVEL_UP_SOUND].play()
+                pausa_som(MUSIC)
+                toca_som(LEVEL_UP_SOUND, False)
                 time.sleep(1.5)
                 if fase < 3:
                     state = PASS
@@ -182,7 +187,7 @@ def game_screen(window, fase):
                 return state
 
         elif state == EXPLODING:
-            assets[MUSIC].stop()
+            pausa_som(MUSIC)
             now = pygame.time.get_ticks()
             if now - explosion_tick > explosion_duration:
                 if lives == 0:
@@ -190,7 +195,7 @@ def game_screen(window, fase):
                     return state
                 else:
                     state = PLAYING
-                    assets[MUSIC].play()
+                    toca_som(MUSIC, False)
                     balao = Balao(assets, BALLOON_IMG, groups, init_balife)
                     all_sprites.add(balao)
                     balloon_life = Life(assets,LIFE_FONT,balao)
@@ -230,4 +235,3 @@ def game_screen(window, fase):
         window.blit(text_surface, text_rect)
 
         pygame.display.update()  # Mostra o novo frame para o jogador
-
