@@ -2,23 +2,77 @@ import pygame
 from random import *
 from reference import COVID_IMG, BALLOON_IMG, GEL_IMG, EAGLE1_IMG, EAGLE2_IMG, POP_SOUND
 from data import WIDTH, HEIGHT, STILL
+from abc import abstractmethod
 
-# --- Cria a classe do balão, que será movimentado pelo jogador
-class Balao(pygame.sprite.Sprite):
-    """ Seta o balão"""
-    def __init__(self,groups,assets,lives):
-        """Recebe e define dados iniciais do balão""" 
+# Superclasse abstrata que contém alguns dados em comum para a maioria das classes
+class ConstrutorComum(pygame.sprite.Sprite):
+    """Faz os sprites e converte em máscaras"""
+    @abstractmethod
+    def __init__(self, assets, arquivo):
         pygame.sprite.Sprite.__init__(self)
-
-        self.image = assets[BALLOON_IMG]
+        self.image = assets[arquivo]
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
+        self.assets = assets
+
+# Superclasse abstrata das águias, que contêm dados em comum como rect.y, speed_x, speed_y
+class Eagle(ConstrutorComum):
+    """Define velocidade das águias e posição em y no uso do update"""
+    @abstractmethod
+    def __init__(self,assets,arquivo):
+        super().__init__(assets,arquivo)
+        self.speed_x = randint(2, 6)
+        self.speed_y = randint(-7, 7)
+    @abstractmethod
+    def update(self):
+        self.rect.y = randint(200, 400)
+        self.speed_x = randint(2, 6)
+        self.speed_y = randint(-7, 7)
+
+class EagleLeft(Eagle):
+    """Seta as águias que surgirão do lado esquerdo da tela"""
+    def __init__(self, assets, arquivo):
+        """Recebe e define os dados iniciais dessas águias"""
+        super().__init__(assets, arquivo)
+        self.rect.x = -50
+        self.rect.y = randint(200, 400)
+    
+    def update(self):
+        """Atualiza a posição das águias"""
+        self.rect.x += self.speed_x
+        self.rect.y += self.speed_y
+
+        if self.rect.top > 600 or self.rect.left > 900:
+            self.rect.x = -50
+            super().update()
+
+class EagleRight(Eagle):
+    """Seta as águias que surgirão do lado direito da tela"""
+    def __init__(self, assets, arquivo):
+        """Recebe e define os dados iniciais dessas águias"""
+        super().__init__(assets, arquivo)
+        self.rect.x = 950
+        self.rect.y = randint(200, 400)
+
+    def update(self):
+        """Atualiza a posição das águias"""
+        self.rect.x -= self.speed_x
+        self.rect.y += self.speed_y
+
+        if self.rect.top > 600 or self.rect.right < -50:
+            self.rect.x = 950
+            super().update()
+
+class Balao(ConstrutorComum):
+    """ Seta o balão"""
+    def __init__(self,assets,arquivo,groups,lives):
+        """Recebe e define dados iniciais do balão""" 
+        super().__init__(assets,arquivo)
         self.rect.centerx = WIDTH / 2 
         self.rect.bottom = HEIGHT / 2 
         self.speedx = 0
         self.speedy = 0
         self.groups = groups
-        self.assets = assets
         self.lives = lives
 
         self.shot = pygame.time.get_ticks()
@@ -38,14 +92,14 @@ class Balao(pygame.sprite.Sprite):
         if self.rect.bottom > HEIGHT:
             self.rect.bottom = HEIGHT
             
-    def shoot(self):
+    def shoot(self,assets,arquivo):
         """ Álcool em gel criado logo abaixo do balão"""
         now = pygame.time.get_ticks()
         elapsed_ticks = now - self.shot
 
         if elapsed_ticks > self.shot_tick:
             self.shot = now
-            gel = Gel(self.assets, self.rect.bottom, self.rect.centerx)
+            gel = Gel(assets, arquivo, self.rect.bottom, self.rect.centerx)
             self.groups['all_sprites'].add(gel)
             self.groups['gels'].add(gel)
             self.assets['pop_sound'].play()
@@ -53,13 +107,12 @@ class Balao(pygame.sprite.Sprite):
 # --- Cria classe para a vida do balão, que se movimenta em função do balão
 class Life(pygame.sprite.Sprite):
     """Seta a vida do balão"""
-    def __init__(self, balao, assets):
+    def __init__(self,assets,arquivo,balao):
         """Recebe e define dados iniciais da vida do balão""" 
         pygame.sprite.Sprite.__init__(self)
-
         self.balao = balao
         self.assets = assets
-        life = self.assets['life_font'].render('{:04d}'.format(self.balao.lives), True, (255, 255, 0))
+        life = self.assets[arquivo].render('{:04d}'.format(self.balao.lives), True, (255, 255, 0))
         self.image = life
         self.rect = self.image.get_rect()
         self.rect.centerx = self.balao.rect.centerx
@@ -67,74 +120,18 @@ class Life(pygame.sprite.Sprite):
     
     def update(self):
         """Atualiza a posição da vida do balão de acordo com a posição do balão"""
-
         life = self.assets['life_font'].render('{:04d}'.format(self.balao.lives), True, (255, 255, 0))
         self.image = life
         self.rect = self.image.get_rect()
         self.rect.centerx = self.balao.rect.centerx
         self.rect.bottom = self.balao.rect.bottom - 47
 
-# --- Cria as classes das águias, uma para cada águia dependendo do lado da tela em que surge        
-class Eagle1(pygame.sprite.Sprite):
-    """Seta as águias que surgirão do lado esquerdo da tela"""
-    def __init__(self, assets):
-        """Recebe e define os dados iniciais dessas águias"""
-        pygame.sprite.Sprite.__init__(self)
-
-        self.image = assets[EAGLE1_IMG]
-        self.mask = pygame.mask.from_surface(self.image)
-        self.rect = self.image.get_rect()
-        self.rect.x = -50
-        self.rect.y = randint(200, 400)
-        self.speed_x = randint(2, 6)
-        self.speed_y = randint(-7, 7)
-    
-    def update(self):
-        """Atualiza a posição dessas águias"""
-        self.rect.x += self.speed_x
-        self.rect.y += self.speed_y
-
-        if self.rect.top > 600 or self.rect.left > 900:
-            self.rect.x = -50
-            self.rect.y = randint(200, 400)
-            self.speed_x = randint(2, 6)
-            self.speed_y = randint(-7, 7)
-
-class Eagle2(pygame.sprite.Sprite):
-    """Seta as águias que surgirão do lado direito da tela"""
-    def __init__(self, assets):
-        """Recebe e define os dados iniciais dessas águias"""
-        pygame.sprite.Sprite.__init__(self)
-
-        self.image = assets[EAGLE2_IMG]
-        self.mask = pygame.mask.from_surface(self.image)
-        self.rect = self.image.get_rect()
-        self.rect.x = 950
-        self.rect.y = randint(200, 400)
-        self.speed_x = randint(2, 6)
-        self.speed_y = randint(-7, 7)
-    
-    def update(self):
-        """Atualiza a posição dessas águias"""
-        self.rect.x -= self.speed_x
-        self.rect.y += self.speed_y
-
-        if self.rect.top > 600 or self.rect.right < -50:
-            self.rect.x = 950
-            self.rect.y = randint(200, 400)
-            self.speed_x = randint(2, 6)
-            self.speed_y = randint(-7, 7)
-
 # --- Cria a classe Covid, pensada como uma maneira do jogador interagir melhor com o jogo
-class Covid(pygame.sprite.Sprite):
+class Covid(ConstrutorComum):
     """ Seta a(s) covid(es)"""
-    def __init__(self, assets):
+    def __init__(self, assets,arquivo):
         """Recebe e define dados iniciais da covid""" 
-        pygame.sprite.Sprite.__init__(self)
-
-        self.image = assets[COVID_IMG]
-        self.mask = pygame.mask.from_surface(self.image)
-        self.rect = self.image.get_rect()
+        super().__init__(assets,arquivo)
         self.rect.x = randint(60, 520)
         self.rect.y = choice([800, 1000, 1200])
         self.speed_y = randint(1, 3)
@@ -149,16 +146,11 @@ class Covid(pygame.sprite.Sprite):
             self.speed_y = randint(1, 3)
 
 # --- Cria classe para o gel, que pode matar o covid 
-class Gel(pygame.sprite.Sprite):
+class Gel(ConstrutorComum):
     """Seta gotas de álcool em gel"""
-    def __init__(self, assets, bottom, centerx):
+    def __init__(self, assets, arquivo, bottom, centerx):
         """Recebe e define os dados iniciais dessas gotas"""
-        pygame.sprite.Sprite.__init__(self)
-
-        self.image = assets[GEL_IMG]
-        self.mask = pygame.mask.from_surface(self.image)
-        self.rect = self.image.get_rect()
-
+        super().__init__(assets, arquivo)
         self.rect.centerx = centerx
         self.rect.bottom = bottom
         self.speedy = 10  

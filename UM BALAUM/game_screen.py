@@ -1,9 +1,26 @@
 # --- Importações
 import pygame
 import time
-from reference import load_assets, IMAGE, MUSIC, LIFE_FONT, SCORE_FONT, LIVES_FONT, EAGLE_SOUND, BOOM_SOUND, PLAYER_SHEET, BACOV_SOUND, GECOV_SOUND, LEVEL_UP_SOUND
-from sprites import Covid, Balao, Life, Eagle1, Eagle2, Gel, load_spritesheet, Player
+from random import *
+from reference import load_assets, COVID_IMG, BALLOON_IMG, GEL_IMG, EAGLE1_IMG, EAGLE2_IMG, POP_SOUND, IMAGE, MUSIC, LIFE_FONT, SCORE_FONT, LIVES_FONT, EAGLE_SOUND, BOOM_SOUND, PLAYER_SHEET, BACOV_SOUND, GECOV_SOUND, LEVEL_UP_SOUND
+from sprites import Covid, Balao, Life, EagleLeft, EagleRight, Gel, load_spritesheet, Player
 from data import WIDTH, HEIGHT, FPS, OVER, GAME, PASS, WIN
+
+# assets = load_assets()
+# #Cria função para inicializar musica
+def toca_som(nome_do_som,boolean):
+    assets = load_assets()
+    som = assets[nome_do_som]
+    if boolean == True:
+        som.play(loops=-1)
+    else:
+        som.play()
+
+# #Cria função para pausar música
+def pausa_som(nome_do_som):
+    assets = load_assets()
+    som = assets[nome_do_som]
+    som.stop()
 
 # --- Cria um grupo de sprites geral e para cada obstáculo
 def game_screen(window, fase):
@@ -31,14 +48,14 @@ def game_screen(window, fase):
     keys_down = {} # Evita possíveis bugs de teclas pressionadas
 
     # --- Cria o jogador (balão)
-    balao = Balao(groups, assets, init_balife)
+    balao = Balao(assets, BALLOON_IMG, groups, init_balife)
     all_sprites.add(balao)
 
-    balloon_life = Life(balao, assets)
+    balloon_life = Life(assets,LIFE_FONT,balao)
     all_sprites.add(balloon_life)
 
     # --- Cria as covides
-    covid = Covid(assets)
+    covid = Covid(assets,COVID_IMG)
     all_sprites.add(covid)
     covides.add(covid)
 
@@ -52,8 +69,8 @@ def game_screen(window, fase):
 
     # --- Cria as águias e suas quantidades 
     for i in range(eagles_qtd):
-        eagle1 = Eagle1(assets)
-        eagle2 = Eagle2(assets)
+        eagle1 = EagleLeft(assets,EAGLE1_IMG)
+        eagle2 = EagleRight(assets,EAGLE2_IMG)
         all_sprites.add(eagle1)
         all_sprites.add(eagle2)
         aguias.add(eagle1)
@@ -68,7 +85,7 @@ def game_screen(window, fase):
     state = PLAYING
 
     # ===== LOOP PRRINCIPAL =====    
-    assets[MUSIC].play(loops=-1)
+    toca_som(MUSIC, True)
     while state != DONE:
         clock.tick(FPS)
 
@@ -90,7 +107,7 @@ def game_screen(window, fase):
                     if event.key == pygame.K_DOWN:
                         balao.speedy += 3.5                    
                     if event.key == pygame.K_SPACE: # Atira álcool em gel
-                        balao.shoot()
+                        balao.shoot(assets,GEL_IMG)
                 # Verifica se soltou alguma tecla
                 if event.type == pygame.KEYUP: # Dependendo da tecla, altera a velocidade                   
                     if event.key in keys_down and keys_down[event.key]:
@@ -114,11 +131,11 @@ def game_screen(window, fase):
                 balao.lives -= 1
                 score -= 10
                 if aguia == eagle1:
-                    eagle1 = Eagle1(assets)
+                    eagle1 = EagleLeft(assets,EAGLE1_IMG)
                     all_sprites.add(eagle1)
                     aguias.add(eagle1)  
                 elif aguia == eagle2:
-                    eagle2 = Eagle2(assets)
+                    eagle2 = EagleRight(assets,EAGLE2_IMG)
                     all_sprites.add(eagle2) 
                     aguias.add(eagle2)
 
@@ -128,7 +145,7 @@ def game_screen(window, fase):
                     lives -= 1
                     balloon_life.kill()
                     balao.kill()
-                    assets[BOOM_SOUND].play()
+                    toca_som(BOOM_SOUND, False)
                     player = Player(balao.rect.center, assets['player_sheet'])
                     all_sprites.add(player)
                     state = EXPLODING
@@ -138,8 +155,8 @@ def game_screen(window, fase):
             
             col_2 = pygame.sprite.spritecollide(balao, covides, True, pygame.sprite.collide_mask)
             for covid in col_2:
-                assets[BACOV_SOUND].play()
-                covid = Covid(assets)
+                toca_som(BACOV_SOUND, False)
+                covid = Covid(assets,COVID_IMG)
                 all_sprites.add(covid)
                 covides.add(covid)
                 balao.lives -= 2
@@ -148,11 +165,11 @@ def game_screen(window, fase):
             col_3 = pygame.sprite.spritecollide(covid, gels, True, pygame.sprite.collide_mask)
             for gel in col_3:
                 covid_lives -= 1
-                assets[GECOV_SOUND].play()
+                toca_som(GECOV_SOUND, False)
                 if covid_lives == 0:
                     covid.kill()
                     gel.kill()
-                    covid = Covid(assets)
+                    covid = Covid(assets,COVID_IMG)
                     all_sprites.add(covid)
                     covides.add(covid)
                     covid_lives = 1
@@ -160,8 +177,8 @@ def game_screen(window, fase):
                     score += 200 
 
             if score >= 1500:
-                assets[MUSIC].stop()
-                assets[LEVEL_UP_SOUND].play()
+                pausa_som(MUSIC)
+                toca_som(LEVEL_UP_SOUND, False)
                 time.sleep(1.5)
                 if fase < 3:
                     state = PASS
@@ -170,7 +187,7 @@ def game_screen(window, fase):
                 return state
 
         elif state == EXPLODING:
-            assets[MUSIC].stop()
+            pausa_som(MUSIC)
             now = pygame.time.get_ticks()
             if now - explosion_tick > explosion_duration:
                 if lives == 0:
@@ -178,10 +195,10 @@ def game_screen(window, fase):
                     return state
                 else:
                     state = PLAYING
-                    assets[MUSIC].play()
-                    balao = Balao(groups, assets, init_balife)
+                    toca_som(MUSIC, False)
+                    balao = Balao(assets, BALLOON_IMG, groups, init_balife)
                     all_sprites.add(balao)
-                    balloon_life = Life(balao, assets)
+                    balloon_life = Life(assets,LIFE_FONT,balao)
                     all_sprites.add(balloon_life)
 
         # --- Saídas
@@ -218,4 +235,3 @@ def game_screen(window, fase):
         window.blit(text_surface, text_rect)
 
         pygame.display.update()  # Mostra o novo frame para o jogador
-
