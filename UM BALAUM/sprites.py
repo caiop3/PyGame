@@ -126,7 +126,6 @@ class Life(pygame.sprite.Sprite):
         self.rect.centerx = self.balao.rect.centerx
         self.rect.bottom = self.balao.rect.bottom - 47
 
-
 # --- Cria a classe Covid, pensada como uma maneira do jogador interagir melhor com o jogo
 class Covid(ConstrutorComum):
     """ Seta a(s) covid(es)"""

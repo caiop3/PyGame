@@ -6,8 +6,7 @@ from reference import load_assets, COVID_IMG, BALLOON_IMG, GEL_IMG, EAGLE1_IMG, 
 from sprites import Covid, Balao, Life, EagleLeft, EagleRight, Gel, load_spritesheet, Player
 from data import WIDTH, HEIGHT, FPS, OVER, GAME, PASS, WIN
 
-# assets = load_assets()
-# #Cria função para inicializar musica
+# Cria função para inicializar musica
 def toca_som(nome_do_som,boolean):
     assets = load_assets()
     som = assets[nome_do_som]
@@ -16,7 +15,7 @@ def toca_som(nome_do_som,boolean):
     else:
         som.play()
 
-# #Cria função para pausar música
+# Cria função para pausar música
 def pausa_som(nome_do_som):
     assets = load_assets()
     som = assets[nome_do_som]
